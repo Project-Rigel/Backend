@@ -1,5 +1,8 @@
 {
   "name": "functions",
+  "version": "0.0.1",
+  "description": "Functions for firebase project",
+  "author": "Green and in TEAM",
   "scripts": {
     "lint": "tslint --project tsconfig.json",
     "build": "tsc",
