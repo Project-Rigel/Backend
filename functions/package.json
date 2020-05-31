@@ -4,8 +4,8 @@
   "description": "Functions for firebase project",
   "author": "Green and in TEAM",
   "scripts": {
-    "lint": "../node_modules/.bin/tslint --project tsconfig.json",
-    "build": "../node_modules/.bin/tsc -w &>/dev/null &",
+    "lint": "./node_modules/.bin/tslint --project tsconfig.json",
+    "build": "./node_modules/.bin/tsc -w &>/dev/null &",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
@@ -17,7 +17,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "firebase-admin": "^8.10.0",
+    "firebase-admin": "^8.12.1",
     "firebase-functions": "^3.6.1"
   },
   "devDependencies": {
