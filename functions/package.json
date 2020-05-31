@@ -4,12 +4,12 @@
   "description": "Functions for firebase project",
   "author": "Green and in TEAM",
   "scripts": {
-    "lint": "tslint --project tsconfig.json",
-    "build": "tsc",
+    "lint": "../node_modules/.bin/tslint --project tsconfig.json",
+    "build": "../node_modules/.bin/tsc -w &>/dev/null &",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
+    "deploy": "firebase deploy --only ",
     "logs": "firebase functions:log"
   },
   "engines": {
