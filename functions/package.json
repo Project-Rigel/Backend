@@ -4,8 +4,8 @@
   "description": "Functions for firebase project",
   "author": "Green and in TEAM",
   "scripts": {
-    "build": "tsc -w &>/dev/null &",
-    "serve": "npm run build && firebase emulators:start --only functions",
+    "build": "tsc",
+    "serve": "tsc -w | firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only ",
@@ -20,6 +20,7 @@
     "class-validator": "^0.12.2",
     "firebase-admin": "^8.12.1",
     "firebase-functions": "^3.6.1",
+    "moment": "^2.26.0",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {

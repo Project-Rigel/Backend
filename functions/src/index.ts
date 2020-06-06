@@ -1,11 +1,27 @@
 import * as admin from "firebase-admin";
 import "reflect-metadata";
-import {getTimeAvaliableFunction} from "./get-time-avaliable.function";
+import {getTimeAvailableFunction} from "./get-time-available.function";
 
-admin.initializeApp();
+import * as serviceAccount from "./rigel-admin-firebase-adminsdk-76ugg-4ed1a0dbb1.json";
 
-exports.getTimeAvaliableFunction = getTimeAvaliableFunction;
+const params = {
+    type: serviceAccount.type,
+    projectId: serviceAccount.project_id,
+    privateKeyId: serviceAccount.private_key_id,
+    privateKey: serviceAccount.private_key,
+    clientEmail: serviceAccount.client_email,
+    clientId: serviceAccount.client_id,
+    authUri: serviceAccount.auth_uri,
+    tokenUri: serviceAccount.token_uri,
+    authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
+    clientC509CertUrl: serviceAccount.client_x509_cert_url
+}
+admin.initializeApp({
+    credential: admin.credential.cert(params),
+    databaseURL: "https://rigel-admin.firebaseio.com"
+});
 
+exports.getTimeAvaliableFunction = getTimeAvailableFunction;
 
 
 // Start writing Firebase Functions
