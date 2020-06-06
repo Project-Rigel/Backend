@@ -4,24 +4,26 @@
   "description": "Functions for firebase project",
   "author": "Green and in TEAM",
   "scripts": {
-    "lint": "tslint --project tsconfig.json",
     "build": "tsc",
-    "serve": "npm run build && firebase emulators:start --only functions",
+    "serve": "tsc -w | firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
+    "deploy": "firebase deploy --only ",
     "logs": "firebase functions:log"
   },
   "engines": {
     "node": "8"
   },
-  "main": "lib/index.js",
+  "main": "lib/src/index.js",
   "dependencies": {
-    "firebase-admin": "^8.10.0",
-    "firebase-functions": "^3.6.1"
+    "class-transformer": "^0.2.3",
+    "class-validator": "^0.12.2",
+    "firebase-admin": "^8.12.1",
+    "firebase-functions": "^3.6.1",
+    "moment": "^2.26.0",
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
-    "tslint": "^5.12.0",
     "typescript": "^3.8.0",
     "firebase-functions-test": "^0.2.0"
   },
