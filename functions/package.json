@@ -4,8 +4,8 @@
   "description": "Functions for firebase project",
   "author": "Green and in TEAM",
   "scripts": {
-    "build": "tsc -w &>/dev/null &",
-    "serve": "npm run build && firebase emulators:start --only functions",
+    "build": "tsc",
+    "serve": "tsc -w | firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only ",
