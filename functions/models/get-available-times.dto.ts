@@ -1,16 +1,16 @@
-import { IsDate, IsString } from "class-validator";
-import { Type } from "class-transformer";
+import { IsDate, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class GetAvailableTimesDto {
   @IsString()
-  businessId: string;
+  businessId!: string;
 
   @IsString()
-  agendaId: string;
+  agendaId!: string;
   @IsString()
-  productId: string;
+  productId!: string;
 
   @IsDate()
   @Type(() => Date)
-  timestamp: Date;
+  timestamp!: Date;
 }
