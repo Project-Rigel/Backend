@@ -14,7 +14,9 @@ jobs:
         with:
           node-version: 12
       - run: npm ci
+        working-directory: ./functions
       - run: npm run build
+        working-directory: ./functions
       - uses: w9jds/firebase-action@master
         with:
           args: deploy --only functions
