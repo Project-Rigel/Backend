@@ -1,8 +1,8 @@
-import * as admin from "firebase-admin";
-import "reflect-metadata";
-import {getTimeAvailableFunction} from "./get-time-available.function";
+import * as admin from 'firebase-admin';
+import 'reflect-metadata';
+import { getTimeAvailableFunction } from './get-time-available.function';
 
-import * as serviceAccount from "./rigel-admin-firebase-adminsdk-76ugg-4ed1a0dbb1.json";
+import * as serviceAccount from './rigel-admin-firebase-adminsdk-76ugg-4ed1a0dbb1.json';
 
 const params = {
     type: serviceAccount.type,
