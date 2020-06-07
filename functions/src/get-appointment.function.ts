@@ -5,34 +5,42 @@ import { getFormattedDateDMY } from './utils/date';
 import { validateDto } from './utils/dto-validator';
 import { generateId } from './utils/uid-generator';
 import moment = require('moment');
+import { HttpsError } from 'firebase-functions/lib/providers/https';
 
 const db = admin.firestore();
 
-export const getAppointmentFunction = functions.https.onRequest(
-  async (req, res) => {
+export const getAppointmentFunction = functions.https.onCall(
+  async (data, ctx) => {
+
+    if (!ctx.auth) {
+      throw new HttpsError('unauthenticated', 'Unauthorized');
+    }
 
     //validate the dto
-    const { dto, errors } = await validateDto<GetAppointmentDto>(GetAppointmentDto, req.body);
+    const { dto, errors } = await validateDto<GetAppointmentDto>(GetAppointmentDto, data);
 
     if (errors.length > 0) {
-      res.status(400).send({ errors });
+      throw new HttpsError('invalid-argument', "Validation errors", errors.toString());
     }
 
     const { formattedDate, appointmentId, appointment } = await computeNeededData(dto);
 
-    const timesDoc = (await getTimesAppointmentsDoc(dto,formattedDate).get()).data() ?? res.status(500).send({error: "No times doc created"});
+    const timesDoc = (await getTimesAppointmentsDoc(dto, formattedDate).get()).data();
 
-    if(timesDoc.appointments[appointment.horaInicio]){
-      res.status(409).send({message: "The interval to make the appointment is already booked."});
+    if (!timesDoc)
+      throw new HttpsError('internal', 'No times doc created');
+
+    if (timesDoc.appointments[appointment.horaInicio]) {
+      throw new HttpsError('already-exists', 'The interval to make the appointment is already booked.');
     }
 
     try {
       await performBatchWrite(dto, formattedDate, appointmentId, appointment);
 
-      res.status(200).send();
+      return { appointment: appointment };
     } catch (error) {
-      res.status(500).send(error);
-      throw error;
+      throw new HttpsError('internal', error.message);
+
     }
   },
 );
