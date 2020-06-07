@@ -1,19 +1,20 @@
-import { Type } from "class-transformer";
-import { IsDate, IsString } from "class-validator";
-/*{ "uid": string, "agendaId": string?, // en caso de que haya una agenda sola no hace falta especificarlo "businessId": string, "productId": string, date: timestamp }*/
+import { Type } from 'class-transformer';
+import { IsDate, IsOptional, IsString } from 'class-validator';
+
 export class GetAppointmentDto {
   @IsString()
-  uid: string;
+  uid!: string;
 
   @IsString()
-  businessId: string;
+  businessId!: string;
   @IsString()
-  productId: string;
+  productId!: string;
 
   @IsDate()
   @Type(() => Date)
-  timestamp: Date;
+  timestamp!: Date;
 
+  @IsOptional()
   @IsString()
   agendaId?: string;
 }
