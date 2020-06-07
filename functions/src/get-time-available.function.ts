@@ -7,8 +7,97 @@ import { appointmentComparer } from './utils/intervals-sorting';
 import { AvailableInterval } from '../models/available-interval';
 import { validateDto } from './utils/dto-validator';
 import { getFormattedDateDMY } from './utils/date';
+import { HttpsError } from 'firebase-functions/lib/providers/https';
 
-function transformIntervalsToMoments(times: FirebaseFirestore.DocumentData) : {sortedAppointments: AppointmentInterval[], availableIntervals: AvailableInterval[]} {
+export const getTimeAvailableFunction = functions.https.onCall(async (data, ctx) => {
+
+  if (!ctx.auth) {
+    throw new HttpsError('unauthenticated', 'Unauthorized');
+  }
+
+  const { errors, dto } = await validateDto<GetAvailableTimesDto>(GetAvailableTimesDto, data);
+
+  if (errors.length > 0) {
+    throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
+  }
+
+  const formattedDate = getFormattedDateDMY(dto.timestamp);
+
+  //1. Read if the avaliable time is created;
+  const timesDoc = await admin.firestore()
+    .doc(`agendas/${dto.agendaId}/times/${formattedDate}-${dto.agendaId}`).get();
+
+
+  if (!timesDoc.exists) {
+    await createTimesDocument(dto, formattedDate, timesDoc);
+  }
+
+  const times = timesDoc.data() ?? undefined;
+
+  if(!times){
+    throw new HttpsError("internal",'times doc is missing.');
+  }
+
+  let { sortedAppointments, availableIntervals } = transformIntervalsToMoments(times);
+
+  const response: { from: string, to: string }[] = [];
+  computeIntervals(availableIntervals, sortedAppointments, response);
+
+  return { intervals: response };
+
+});
+
+
+async function createSortedIntervals(parentData: FirebaseFirestore.DocumentData, intervals: object[], formattedDate: string, timesDoc: any) {
+  Object.keys(parentData.intervals[formattedDate]).forEach(key => {
+    intervals.push({
+      day: formattedDate,
+      dayOfWeek: null,
+      from: key,
+      to: parentData.intervals[formattedDate][key],
+    });
+  });
+  await timesDoc.ref.set({ availableTimes: intervals }, { merge: true });
+}
+
+async function setDocumentAvailableIntervals(parentData: FirebaseFirestore.DocumentData, dayOfWeek: number, intervals: object[], timesDoc: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>, formattedDate: string, dto: GetAvailableTimesDto) {
+  Object.keys(parentData.intervals[dayOfWeek]).forEach(key => {
+    intervals.push({
+      day: null,
+      dayOfWeek: dayOfWeek,
+      from: key,
+      to: parentData.intervals[dayOfWeek][key],
+    });
+  });
+  await timesDoc.ref.set({
+    id: `${formattedDate}-${dto.agendaId}`,
+    availableTimes: intervals,
+  }, { merge: true });
+}
+
+async function createTimesDocument(dto: GetAvailableTimesDto, formattedDate: string, timesDoc: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>) {
+  const dayOfWeek = dto.timestamp.getDay();
+
+  const parent = await admin.firestore()
+    .doc(`agendas/${dto.agendaId}`).get();
+
+  let intervals: object[] = [];
+
+  const parentData = parent.data() ?? undefined;
+
+  if (!parentData) {
+    throw new HttpsError('internal', 'The doc is not owned by a business.');
+  }
+  if (parentData.intervals) {
+    if (parentData.intervals[formattedDate]) {
+      await createSortedIntervals(parentData, intervals, formattedDate, timesDoc);
+    } else if (parentData.intervals[dayOfWeek]) {
+      await setDocumentAvailableIntervals(parentData, dayOfWeek, intervals, timesDoc, formattedDate, dto);
+    }
+  }
+}
+
+function transformIntervalsToMoments(times: FirebaseFirestore.DocumentData): { sortedAppointments: AppointmentInterval[], availableIntervals: AvailableInterval[] } {
   const appointments = times.appointments ?? [];
   let sortedAppointments: AppointmentInterval[] = [];
   Object.keys(appointments).sort().forEach(elem => {
@@ -66,83 +155,6 @@ function computeIntervals(availableIntervals: AvailableInterval[], sortedAppoint
           response.push({ from: sortedAppointments[j].to, to: sortedAppointments[j + 1].from });
         }
       }
-    }
-  }
-}
-
-export const getTimeAvailableFunction = functions.https.onRequest(async (req, res) => {
-
-  const { errors, dto } = await validateDto<GetAvailableTimesDto>(GetAvailableTimesDto, req.body);
-
-  if (errors.length > 0) {
-    res.status(400).send({ errors: errors });
-  }
-
-  const formattedDate = getFormattedDateDMY(dto.timestamp);
-
-  //1. Read if the avaliable time is created;
-  const timesDoc = await admin.firestore()
-    .doc(`agendas/${dto.agendaId}/times/${formattedDate}-${dto.agendaId}`).get();
-
-
-  if (!timesDoc.exists) {
-    await createTimesDocument(dto, res, formattedDate, timesDoc);
-  }
-
-  const times = timesDoc.data() ?? res.status(500).send(new Error('times doc is missing.'));
-  let { sortedAppointments, availableIntervals } = transformIntervalsToMoments(times);
-
-  const response: {from:string, to:string}[] = [];
-  computeIntervals(availableIntervals, sortedAppointments, response);
-
-  res.send({ intervals: response });
-  return;
-
-});
-
-
-async function createSortedIntervals(parentData: FirebaseFirestore.DocumentData, intervals: object[], formattedDate: string, timesDoc: any) {
-  Object.keys(parentData.intervals[formattedDate]).forEach(key => {
-    intervals.push({
-      day: formattedDate,
-      dayOfWeek: null,
-      from: key,
-      to: parentData.intervals[formattedDate][key],
-    });
-  });
-  await timesDoc.ref.set({ availableTimes: intervals }, { merge: true });
-}
-
-async function setDocumentAvailableIntervals(parentData: FirebaseFirestore.DocumentData, dayOfWeek: number, intervals: object[], timesDoc: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>, formattedDate: string, dto: GetAvailableTimesDto) {
-  Object.keys(parentData.intervals[dayOfWeek]).forEach(key => {
-    intervals.push({
-      day: null,
-      dayOfWeek: dayOfWeek,
-      from: key,
-      to: parentData.intervals[dayOfWeek][key],
-    });
-  });
-  await timesDoc.ref.set({
-    id: `${formattedDate}-${dto.agendaId}`,
-    availableTimes: intervals,
-  }, { merge: true });
-}
-
-async function createTimesDocument(dto: GetAvailableTimesDto, res: any, formattedDate: string, timesDoc: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>) {
-  const dayOfWeek = dto.timestamp.getDay();
-
-  const parent = await admin.firestore()
-    .doc(`agendas/${dto.agendaId}`).get();
-
-  let intervals: object[] = [];
-
-  const parentData = parent.data() ?? res.status(500).send({ error: new Error('The doc is not owned by a business.') });
-
-  if (parentData.intervals) {
-    if (parentData.intervals[formattedDate]) {
-      await createSortedIntervals(parentData, intervals, formattedDate, timesDoc);
-    } else if (parentData.intervals[dayOfWeek]) {
-      await setDocumentAvailableIntervals(parentData, dayOfWeek, intervals, timesDoc, formattedDate, dto);
     }
   }
 }
