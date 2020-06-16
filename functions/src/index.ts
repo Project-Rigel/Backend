@@ -1,8 +1,8 @@
 import * as admin from 'firebase-admin';
 import 'reflect-metadata';
-import { getTimeAvailableFunction } from './get-time-available.function';
-
-if (!process.env.FIREBASE_CONFIG) {
+//important to run the init first
+console.log(process.env.FUNCTIONS_EMULATOR)
+if (process.env.FUNCTIONS_EMULATOR) {
   const serviceAccount = require('./rigel-admin-firebase-adminsdk-76ugg-4ed1a0dbb1.json');
   const params = {
     type: serviceAccount.type,
@@ -24,9 +24,12 @@ if (!process.env.FIREBASE_CONFIG) {
   admin.initializeApp();
 }
 
+import { getTimeAvailableFunction } from './get-time-available.function';
+import { getAppointmentFunction } from './get-appointment.function';
 
-exports.getTimeAvaliableFunction = getTimeAvailableFunction;
 
+exports.getAvaliableTimeIntervals = getTimeAvailableFunction;
+exports.bookAppointment = getAppointmentFunction;
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
