@@ -28,8 +28,8 @@ import { getTimeAvailableFunction } from './get-time-available.function';
 import { getAppointmentFunction } from './get-appointment.function';
 
 
-exports.getTimeAvaliableFunction = getTimeAvailableFunction;
-exports.getAppointmentFunction = getAppointmentFunction;
+exports.getAvaliableTimeIntervals = getTimeAvailableFunction;
+exports.bookAppointment = getAppointmentFunction;
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
