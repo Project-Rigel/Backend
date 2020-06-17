@@ -1,7 +1,6 @@
 import * as admin from 'firebase-admin';
 import 'reflect-metadata';
 //important to run the init first
-console.log(process.env.FUNCTIONS_EMULATOR)
 if (process.env.FUNCTIONS_EMULATOR) {
   const serviceAccount = require('./rigel-admin-firebase-adminsdk-76ugg-4ed1a0dbb1.json');
   const params = {

@@ -21,7 +21,8 @@ export const getTimeAvailableFunction = functions.https.onCall(async (data, ctx)
     throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
   }
 
-  const formattedDate = getFormattedDateDMY(dto.timestamp);
+
+  const formattedDate = getFormattedDateDMY(new Date(dto.timestamp));
 
   //1. Read if the avaliable time is created;
   const timesDoc = await admin.firestore()
@@ -76,7 +77,7 @@ async function setDocumentAvailableIntervals(parentData: FirebaseFirestore.Docum
 }
 
 async function createTimesDocument(dto: GetAvailableTimesDto, formattedDate: string, timesDoc: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>) {
-  const dayOfWeek = dto.timestamp.getDay();
+  const dayOfWeek = new Date(dto.timestamp).getDay();
 
   const parent = await admin.firestore()
     .doc(`agendas/${dto.agendaId}`).get();
@@ -116,7 +117,7 @@ function transformIntervalsToMoments(times: FirebaseFirestore.DocumentData): { s
   return { sortedAppointments, availableIntervals };
 }
 
-function computeIntervals(availableIntervals: AvailableInterval[], sortedAppointments: AppointmentInterval[], response: any[]) {
+function computeIntervals(availableIntervals: AvailableInterval[], sortedAppointments: AppointmentInterval[], response: { from:string, to:string }[]) {
   let appointmentIndex = 0;
 
   for (let i = 0; i < availableIntervals.length; i++) {
@@ -134,12 +135,12 @@ function computeIntervals(availableIntervals: AvailableInterval[], sortedAppoint
         //si hay margen desde el principio del intervalo hasta el principio del evento lo añadimos
         const diff = sortedAppointments[j].from.diff(availableIntervals[i].from, 'minutes');
         if (!(diff <= 0)) {
-          response.push({ from: availableIntervals[i].from, to: sortedAppointments[j].from });
+          response.push({ from: availableIntervals[i].from.format("HH:mm"), to: sortedAppointments[j].from.format("HH:mm") });
 
           // si es el final de las citas comprobamos si sobra tiempo al final.
           const diff = availableIntervals[i].to.diff(sortedAppointments[j].to, 'minutes');
           if (j === sortedAppointments.length - 1 && diff >= 0) {
-            response.push({ from: sortedAppointments[j].to, to: availableIntervals[i].to });
+            response.push({ from: sortedAppointments[j].to.format("HH:mm"), to: availableIntervals[i].to.format("HH:mm") });
           }
         }
         //si no es el primer evento.
@@ -150,9 +151,9 @@ function computeIntervals(availableIntervals: AvailableInterval[], sortedAppoint
         // }//si estamos en el ultimo hay margen hasta el final del intervalo lo añadimos.
         // else
         if (j === sortedAppointments.length - 1 && availableIntervals[i].to.diff(sortedAppointments[j].to, 'minutes') > 0) {
-          response.push({ from: sortedAppointments[j].to, to: availableIntervals[i].to });
+          response.push({ from: sortedAppointments[j].to.format("HH:mm"), to: availableIntervals[i].to.format("HH:mm") });
         } else if (j + 1 < sortedAppointments.length && sortedAppointments[j + 1].from < availableIntervals[i].to) {
-          response.push({ from: sortedAppointments[j].to, to: sortedAppointments[j + 1].from });
+          response.push({ from: sortedAppointments[j].to.format("HH:mm"), to: sortedAppointments[j + 1].from.format("HH:mm") });
         }
       }
     }
