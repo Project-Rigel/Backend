@@ -1,4 +1,4 @@
-import { IsDate, IsDateString, IsString } from 'class-validator';
+import { IsDateString, IsString } from 'class-validator';
 
 export class GetAvailableTimesDto {
   @IsString()

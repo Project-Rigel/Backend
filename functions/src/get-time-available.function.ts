@@ -33,6 +33,7 @@ export const getTimeAvailableFunction = functions.https.onCall(async (data, ctx)
     await createTimesDocument(dto, formattedDate, timesDoc);
   }
 
+  console.log(timesDoc.data())
   const times = timesDoc.data() ?? undefined;
 
   if(!times){
@@ -94,6 +95,8 @@ async function createTimesDocument(dto: GetAvailableTimesDto, formattedDate: str
       await createSortedIntervals(parentData, intervals, formattedDate, timesDoc);
     } else if (parentData.intervals[dayOfWeek]) {
       await setDocumentAvailableIntervals(parentData, dayOfWeek, intervals, timesDoc, formattedDate, dto);
+    }else{
+      throw new HttpsError("invalid-argument", "The agenda you are trying to book in does not have a config for the day you are trying to book. Please contact the business owner to set it up.")
     }
   }
 }
