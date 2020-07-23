@@ -14,7 +14,7 @@
   "engines": {
     "node": "8"
   },
-  "main": "lib/src/index.js",
+  "main": "lib/index.js",
   "dependencies": {
     "class-transformer": "^0.2.3",
     "class-validator": "^0.12.2",

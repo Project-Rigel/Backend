@@ -1,10 +1,10 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { GetAvailableTimesDto } from '../models/get-available-times.dto';
+import { GetAvailableTimesDto } from './models/get-available-times.dto';
 import * as moment from 'moment';
-import { AppointmentInterval } from '../models/appointment-interval';
+import { AppointmentInterval } from './models/appointment-interval';
 import { appointmentComparer } from './utils/intervals-sorting';
-import { AvailableInterval } from '../models/available-interval';
+import { AvailableInterval } from './models/available-interval';
 import { validateDto } from './utils/dto-validator';
 import { getFormattedDateDMY } from './utils/date';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
@@ -33,7 +33,6 @@ export const getTimeAvailableFunction = functions.https.onCall(async (data, ctx)
     await createTimesDocument(dto, formattedDate, timesDoc);
   }
 
-  console.log(timesDoc.data())
   const times = timesDoc.data() ?? undefined;
 
   if(!times){
