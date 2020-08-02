@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { GetAppointmentDto } from '../models/get-appointment.dto';
+import { GetAppointmentDto } from './models/get-appointment.dto';
 import { getFormattedDateDMY } from './utils/date';
 import { validateDto } from './utils/dto-validator';
 import { generateId } from './utils/uid-generator';
