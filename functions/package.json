@@ -6,10 +6,13 @@
   "scripts": {
     "build": "tsc",
     "serve": "tsc -w | firebase emulators:start --only functions",
+    "serve:debug": "npm run serve -- --inspect-functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only ",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "lint": "eslint src/**/*.ts --fix",
+    "format" : "prettier src/**/*.ts --write"
   },
   "engines": {
     "node": "8"
@@ -24,12 +27,14 @@
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
-    "firebase-functions-test": "^0.2.0",
-    "prettier": "^2.0.5",
-    "typescript": "^3.8.0",
+    "@typescript-eslint/eslint-plugin": "^3.7.1",
+    "@typescript-eslint/parser": "^3.7.1",
     "eslint": "6.8.0",
     "eslint-config-prettier": "^6.10.0",
-    "eslint-plugin-import": "2.20.1"
+    "eslint-plugin-import": "2.20.1",
+    "firebase-functions-test": "^0.2.0",
+    "prettier": "^2.0.5",
+    "typescript": "^3.8.0"
   },
   "private": true
 }

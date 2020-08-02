@@ -1,4 +1,4 @@
-import { IsDateString, IsInt, IsString, Max, Min } from 'class-validator';
+import { IsInt, IsString, Max, Min } from 'class-validator';
 
 export class GetAvailableDaysDto {
   @IsInt()
@@ -12,6 +12,6 @@ export class GetAvailableDaysDto {
   @IsString()
   businessId!: string;
 
-  @IsDateString()
+  @IsString()
   productId!: string;
 }

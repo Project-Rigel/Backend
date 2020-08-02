@@ -1,6 +1,6 @@
-import {Moment} from "moment";
+import { Moment } from 'moment';
 
 export interface AppointmentInterval {
-    from: Moment;
-    to: Moment
+  from: Moment;
+  to: Moment;
 }

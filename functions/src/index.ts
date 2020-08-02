@@ -13,9 +13,10 @@ if (process.env.FUNCTIONS_EMULATOR) {
 import 'reflect-metadata';
 import { getTimeAvailableFunction } from './get-time-available.function';
 import { getAppointmentFunction } from './get-appointment.function';
+import { getOpenDaysForMonth } from './get-open-days-for-month';
 
 
 exports.getAvaliableTimeIntervals = getTimeAvailableFunction;
 exports.bookAppointment = getAppointmentFunction;
-exports.getAvaliableDaysInMonth = getTimeAvailableFunction;
+exports.getAvaliableDaysInMonth = getOpenDaysForMonth;
 

@@ -4,6 +4,7 @@ import { validateDto } from './utils/dto-validator';
 import * as admin from 'firebase-admin';
 import { GetAvailableDaysDto } from './models/get-available-days.dto';
 import moment = require('moment');
+import { getDateFromFormattedDate } from './utils/date';
 
 const db = admin.firestore();
 
@@ -18,38 +19,91 @@ export const getOpenDaysForMonth = functions.https.onCall(
     const { dto, errors } = await validateDto<GetAvailableDaysDto>(GetAvailableDaysDto, data);
 
     if (errors.length > 0) {
-      throw new HttpsError('invalid-argument', "Validation errors", errors.toString());
+      throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
     }
 
-    const agendaData = (await db.doc("agendas/" + dto.agendaId).get()).data();
+    const agendaData = (await db.doc('agendas/' + dto.agendaId).get()).data();
 
-    if(!agendaData){
-      throw  new HttpsError("internal", "There is no agenda created with that ID.")
+    if (!agendaData) {
+      throw  new HttpsError('internal', 'There is no agenda created with that ID.');
     }
 
-    if(!agendaData.intervals){
-      throw  new HttpsError("internal", "There is no open days set up for this agenda.")
+    if (!agendaData.intervals) {
+      return { openDays: [] };
     }
 
     const intervals: number[] = [];
 
-    //TODO read if there is any opening day outside of the normal ones
-    Object.keys(agendaData.intervals).forEach(key => {
-      intervals.push(Number.parseInt(key));
-    });
+    try {
+      //TODO read if there is any opening day outside of the normal ones
+      extractAgendaConfigData(agendaData, intervals);
 
-    const results = [];
-    for (let i = 0; i < intervals.length; i++) {
-      var date = moment().month(dto.month).weekday(intervals[i]);
+      const openDays: any[] = [];
+      computeOpenDaysForGivenAgenda(intervals, openDays);
+      return openDays;
 
-      if (date.date() > 7) date.add(7,'d');
-      var month = date.month();
-      while(month === date.month()){
-        results.push(date);
-        date.add(7,'d');
+    } catch (e) {
+      throw new HttpsError('internal', e.toString());
+    }
+  },
+);
+
+function computeOpenDaysForGivenAgenda(intervals: number[], openDays: any[]) {
+  for (let i = 0; i < intervals.length; i++) {
+    let intervalOpenDays = [];
+    let firstDay;
+    let isDayOfWeek: boolean;
+
+    //if the length of the key is greater than 1 we are referencing a day
+    if (intervals[i].toString().length > 1) {
+      const formattedMoment = getDateFromFormattedDate(intervals[i].toString());
+      if (formattedMoment.month() !== moment(new Date()).month()) {
+        continue;
       }
+      isDayOfWeek = false;
+      firstDay = moment()
+        .startOf('month').date(formattedMoment.get('date'));
+    } else {
+      isDayOfWeek = true;
+      firstDay = moment()
+        .startOf('month').date(intervals[i]);
     }
 
 
-  },
-);
+    if (firstDay.date() > 7) firstDay.add(7, 'd');
+    const month = firstDay.month();
+    while (month === firstDay.month()) {
+      intervalOpenDays.push(firstDay.date());
+      firstDay.add(7, 'd');
+    }
+
+    if(isDayOfWeek){
+      openDays.push({
+        day: intervals[i],
+        dayDisplayName: firstDay.format('dddd'),
+        openDays: intervalOpenDays,
+        isDayOfWeek: isDayOfWeek,
+      });
+    }else{
+      openDays.push({
+        day: firstDay.day(),
+        dayDisplayName: firstDay.format('dddd'),
+        openDays: [firstDay.date()],
+        isDayOfWeek: isDayOfWeek,
+      })
+    }
+
+
+  }
+}
+
+function extractAgendaConfigData(agendaData: FirebaseFirestore.DocumentData, intervals: any[]) {
+  Object.keys(agendaData.intervals).forEach(key => {
+    if (key.toString().length <= 1) {
+      intervals.push(Number.parseInt(key));
+    } else {
+      intervals.push(key.toString());
+    }
+  });
+}
+
