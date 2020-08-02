@@ -9,7 +9,7 @@ import { HttpsError } from 'firebase-functions/lib/providers/https';
 
 const db = admin.firestore();
 
-export const getAppointmentFunction = functions.https.onCall(
+export const getAppointmentFunction = functions.region("europe-west1").https.onCall(
   async (data, ctx) => {
 
     if (!ctx.auth) {

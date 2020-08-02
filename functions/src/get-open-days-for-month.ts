@@ -8,7 +8,7 @@ import { getDateFromFormattedDate } from './utils/date';
 
 const db = admin.firestore();
 
-export const getOpenDaysForMonth = functions.https.onCall(
+export const getOpenDaysForMonth = functions.region("europe-west1").https.onCall(
   async (data, ctx) => {
 
     if (!ctx.auth) {
