@@ -9,7 +9,7 @@ import { validateDto } from './utils/dto-validator';
 import { getFormattedDateDMY } from './utils/date';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 
-export const getTimeAvailableFunction = functions.https.onCall(async (data, ctx) => {
+export const getTimeAvailableFunction = functions.region("europe-west1").https.onCall(async (data, ctx) => {
 
   if (!ctx.auth) {
     throw new HttpsError('unauthenticated', 'Unauthorized');
