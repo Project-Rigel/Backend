@@ -14,3 +14,5 @@ functions/src/secrets/
 **/rigel-admin-firebase-adminsdk-76ugg-4ed1a0dbb1.json
 
 functions/lib/
+
+**/secrets/

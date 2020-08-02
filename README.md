@@ -10,18 +10,26 @@
 
 ## Prerequisites
 
-- node 8
+- NODE 8  
+- GCLOUD CLI. More info here on how to install: https://cloud.google.com/sdk/docs/quickstarts?hl=es
+
 
 ## Install
 
+### Install dependencies
 ```sh
 npm install
 ```
 
-## Usage
-
+### Generate default credentials for auth with firebase backend
 ```sh
-npm run start
+gcloud auth application-default login
+```
+
+
+### Start the emulator for local development
+```sh
+npm run serve
 ```
 
 ## Author
@@ -29,3 +37,4 @@ npm run start
 👤 **Green and in TEAM**
 
 - Github: [@JMBastida](https://github.com/JMBastida)
+- Github: [@EduardoSimon](https://github.com/EduardoSimon)
