@@ -6,6 +6,9 @@ import { validateDto } from './utils/dto-validator';
 import { generateId } from './utils/uid-generator';
 import moment = require('moment');
 import { HttpsError } from 'firebase-functions/lib/providers/https';
+import { Appointment } from './models/appointment';
+import { Product } from './models/product';
+import { Customer } from './models/customer';
 
 const db = admin.firestore();
 
@@ -23,14 +26,26 @@ export const getAppointmentFunction = functions.region("europe-west1").https.onC
       throw new HttpsError('invalid-argument', "Validation errors", errors.toString());
     }
 
-    const { formattedDate, appointmentId, appointment } = await computeNeededData(dto);
+    const productData = (await admin.firestore().collection("products").doc(dto.productId).get()).data();
+
+    if(!productData){
+      throw new HttpsError("invalid-argument", "The specified product doesnt exist.")
+    }
+
+    const customerData = (await admin.firestore().collection("customers").doc(dto.uid).get()).data();
+
+    if(!customerData){
+      throw new HttpsError("invalid-argument", "The specified customer doesnt exist.")
+    }
+
+    const { formattedDate, appointmentId, appointment } = await computeNeededData(dto, productData as Product, customerData as Customer);
 
     const timesDoc = (await getTimesAppointmentsDoc(dto, formattedDate).get()).data();
 
     if (!timesDoc)
       throw new HttpsError('internal', 'No times doc created');
 
-    if (timesDoc.appointments[appointment.horaInicio]) {
+    if (timesDoc.appointments[getFormattedDateDMY(appointment.startDate)]) {
       throw new HttpsError('already-exists', 'The interval to make the appointment is already booked.');
     }
 
@@ -45,8 +60,7 @@ export const getAppointmentFunction = functions.region("europe-west1").https.onC
   },
 );
 
-
-async function performBatchWrite(dto: GetAppointmentDto, formattedDate: string, appointmentId: string, appointment: { horaFin: string; duration: number; uid: string; id: any; horaInicio: string }) {
+async function performBatchWrite(dto: GetAppointmentDto, formattedDate: string, appointmentId: string, appointment: Appointment) {
   const batchWrite = db.batch();
 
   //write in the business side
@@ -58,7 +72,7 @@ async function performBatchWrite(dto: GetAppointmentDto, formattedDate: string, 
   //write in the appointments public doc
   batchWrite.set(getTimesAppointmentsDoc(dto, formattedDate), {
     appointments: {
-      [appointment.horaInicio]: appointment.horaFin,
+      [getFormattedDateDMY(appointment.startDate)]: appointment.endDate,
     },
   }, { merge: true });
 
@@ -68,7 +82,7 @@ async function performBatchWrite(dto: GetAppointmentDto, formattedDate: string, 
   await batchWrite.commit();
 }
 
-async function computeNeededData(dto: GetAppointmentDto) {
+async function computeNeededData(dto: GetAppointmentDto, product: Product, customer: Customer) {
   //generate the needed data
   const formattedDate = getFormattedDateDMY(dto.timestamp);
   const appointmentId = generateId(db);
@@ -76,12 +90,15 @@ async function computeNeededData(dto: GetAppointmentDto) {
   //get the product info
   await db.doc(`users/${dto.businessId}/products/${dto.productId}`).get();
 
-  const appointment = {
+  const appointment: Appointment = {
     id: appointmentId,
-    uid: dto.uid,
-    horaInicio: dto.timestamp.getHours() + ':' + dto.timestamp.getMinutes(),
-    horaFin: moment(dto.timestamp).add(30, 'minutes').toDate().getHours() + ':' + moment(dto.timestamp).add(30, 'minutes').toDate().getMinutes(),
-    duration: 30, //TODO set with the product info
+    customerId: dto.uid,
+    startDate: dto.timestamp,
+    endDate: moment(dto.timestamp).add(product.duration, 'minutes').toDate(),
+    duration: product.duration,
+    name: product.name,
+    customerName: customer.name,
+
   };
   return { formattedDate, appointmentId, appointment };
 }

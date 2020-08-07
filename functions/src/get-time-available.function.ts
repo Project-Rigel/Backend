@@ -8,8 +8,9 @@ import { AvailableInterval } from './models/available-interval';
 import { validateDto } from './utils/dto-validator';
 import { getFormattedDateDMY } from './utils/date';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
+import { Product } from './models/product';
 
-export const getTimeAvailableFunction = functions.region("europe-west1").https.onCall(async (data, ctx) => {
+export const getTimeAvailableFunction = functions.region('europe-west1').https.onCall(async (data, ctx) => {
 
   if (!ctx.auth) {
     throw new HttpsError('unauthenticated', 'Unauthorized');
@@ -28,21 +29,35 @@ export const getTimeAvailableFunction = functions.region("europe-west1").https.o
   const timesDoc = await admin.firestore()
     .doc(`agendas/${dto.agendaId}/times/${formattedDate}-${dto.agendaId}`).get();
 
+  let times;
 
   if (!timesDoc.exists) {
     await createTimesDocument(dto, formattedDate, timesDoc);
+    times = (await timesDoc.ref.get()).data();
+  } else {
+    times = timesDoc.data();
   }
 
-  const times = timesDoc.data() ?? undefined;
-
-  if(!times){
-    throw new HttpsError("internal",'times doc is missing.');
+  if (!times) {
+    throw new HttpsError('internal', 'There are no avaliable time intervals for this combo.');
   }
 
   let { sortedAppointments, availableIntervals } = transformIntervalsToMoments(times);
 
   const response: { from: string, to: string }[] = [];
-  computeIntervals(availableIntervals, sortedAppointments, response);
+
+  if (dto.productId) {
+    let productDocRef = await admin.firestore().collection('products').doc(dto.productId).get();
+    const productData = productDocRef.data();
+    if (!productData) {
+      throw new HttpsError('invalid-argument', 'There is no product associated with that Id.');
+    }
+    computeIntervals(availableIntervals, sortedAppointments, response, productData as Product);
+  } else {
+    computeIntervals(availableIntervals, sortedAppointments, response, null);
+
+  }
+
 
   return { intervals: response };
 
@@ -58,7 +73,7 @@ async function createSortedIntervals(parentData: FirebaseFirestore.DocumentData,
       to: parentData.intervals[formattedDate][key],
     });
   });
-  await timesDoc.ref.set({ availableTimes: intervals }, { merge: true });
+  await timesDoc.ref.set({ availableTimes: intervals, appointments: [] }, { merge: true });
 }
 
 async function setDocumentAvailableIntervals(parentData: FirebaseFirestore.DocumentData, dayOfWeek: number, intervals: object[], timesDoc: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>, formattedDate: string, dto: GetAvailableTimesDto) {
@@ -73,6 +88,7 @@ async function setDocumentAvailableIntervals(parentData: FirebaseFirestore.Docum
   await timesDoc.ref.set({
     id: `${formattedDate}-${dto.agendaId}`,
     availableTimes: intervals,
+    appointments: [],
   }, { merge: true });
 }
 
@@ -94,8 +110,8 @@ async function createTimesDocument(dto: GetAvailableTimesDto, formattedDate: str
       await createSortedIntervals(parentData, intervals, formattedDate, timesDoc);
     } else if (parentData.intervals[dayOfWeek]) {
       await setDocumentAvailableIntervals(parentData, dayOfWeek, intervals, timesDoc, formattedDate, dto);
-    }else{
-      throw new HttpsError("invalid-argument", "The agenda you are trying to book in does not have a config for the day you are trying to book. Please contact the business owner to set it up.")
+    } else {
+      throw new HttpsError('invalid-argument', 'The agenda you are trying to book in does not have a config for the day you are trying to book. Please contact the business owner to set it up.');
     }
   }
 }
@@ -119,45 +135,67 @@ function transformIntervalsToMoments(times: FirebaseFirestore.DocumentData): { s
   return { sortedAppointments, availableIntervals };
 }
 
-function computeIntervals(availableIntervals: AvailableInterval[], sortedAppointments: AppointmentInterval[], response: { from:string, to:string }[]) {
+function computeIntervals(availableIntervals: AvailableInterval[], sortedAppointments: AppointmentInterval[], response: { from: string, to: string }[], product: Product) {
   let appointmentIndex = 0;
 
-  for (let i = 0; i < availableIntervals.length; i++) {
-    for (let j = appointmentIndex; j < sortedAppointments.length; j++) {
+  if (sortedAppointments.length <= 0) {
+    for (let i = 0; i < availableIntervals.length; i++) {
+      response.push({
+        from: availableIntervals[i].from.format('HH:mm'),
+        to: availableIntervals[i].to.format('HH:mm'),
+      });
+    }
+  } else {
+    for (let i = 0; i < availableIntervals.length; i++) {
+      for (let j = appointmentIndex; j < sortedAppointments.length; j++) {
 
-      //si es mayor que el intervalo de apertura pasar al siguiente intervalo
-      if (sortedAppointments[j].to > availableIntervals[i].to || sortedAppointments[j].from > availableIntervals[i].to) {
-        appointmentIndex = j;
-        break;
-      }
-
-      //si es el primer evento en este intervalo
-      if (j === appointmentIndex) {
-
-        //si hay margen desde el principio del intervalo hasta el principio del evento lo añadimos
-        const diff = sortedAppointments[j].from.diff(availableIntervals[i].from, 'minutes');
-        if (!(diff <= 0)) {
-          response.push({ from: availableIntervals[i].from.format("HH:mm"), to: sortedAppointments[j].from.format("HH:mm") });
-
-          // si es el final de las citas comprobamos si sobra tiempo al final.
-          const diff = availableIntervals[i].to.diff(sortedAppointments[j].to, 'minutes');
-          if (j === sortedAppointments.length - 1 && diff >= 0) {
-            response.push({ from: sortedAppointments[j].to.format("HH:mm"), to: availableIntervals[i].to.format("HH:mm") });
-          }
+        //si es mayor que el intervalo de apertura pasar al siguiente intervalo
+        if (sortedAppointments[j].to > availableIntervals[i].to || sortedAppointments[j].from > availableIntervals[i].to) {
+          appointmentIndex = j;
+          break;
         }
-        //si no es el primer evento.
-      } else {
-        // //miramos hacia delante y comprobamos que no nos salgamos del array ni del intervalo.
-        // if (j + 1 < ordered.length && ordered[j + 1].from > availableTimes[i].to){
-        //     response.push({from: ordered[j].to, to: availableTimes[i].to})
-        // }//si estamos en el ultimo hay margen hasta el final del intervalo lo añadimos.
-        // else
-        if (j === sortedAppointments.length - 1 && availableIntervals[i].to.diff(sortedAppointments[j].to, 'minutes') > 0) {
-          response.push({ from: sortedAppointments[j].to.format("HH:mm"), to: availableIntervals[i].to.format("HH:mm") });
-        } else if (j + 1 < sortedAppointments.length && sortedAppointments[j + 1].from < availableIntervals[i].to) {
-          response.push({ from: sortedAppointments[j].to.format("HH:mm"), to: sortedAppointments[j + 1].from.format("HH:mm") });
+
+        //si es el primer evento en este intervalo
+        if (j === appointmentIndex) {
+
+          //si hay margen desde el principio del intervalo hasta el principio del evento lo añadimos
+          const diff = sortedAppointments[j].from.diff(availableIntervals[i].from, 'minutes');
+          if (!(diff <= 0)) {
+            response.push({
+              from: availableIntervals[i].from.format('HH:mm'),
+              to: sortedAppointments[j].from.format('HH:mm'),
+            });
+
+            // si es el final de las citas comprobamos si sobra tiempo al final.
+            const diff = availableIntervals[i].to.diff(sortedAppointments[j].to, 'minutes');
+            if (j === sortedAppointments.length - 1 && diff >= 0) {
+              response.push({
+                from: sortedAppointments[j].to.format('HH:mm'),
+                to: availableIntervals[i].to.format('HH:mm'),
+              });
+            }
+          }
+          //si no es el primer evento.
+        } else {
+          // //miramos hacia delante y comprobamos que no nos salgamos del array ni del intervalo.
+          // if (j + 1 < ordered.length && ordered[j + 1].from > availableTimes[i].to){
+          //     response.push({from: ordered[j].to, to: availableTimes[i].to})
+          // }//si estamos en el ultimo hay margen hasta el final del intervalo lo añadimos.
+          // else
+          if (j === sortedAppointments.length - 1 && availableIntervals[i].to.diff(sortedAppointments[j].to, 'minutes') > 0) {
+            response.push({
+              from: sortedAppointments[j].to.format('HH:mm'),
+              to: availableIntervals[i].to.format('HH:mm'),
+            });
+          } else if (j + 1 < sortedAppointments.length && sortedAppointments[j + 1].from < availableIntervals[i].to) {
+            response.push({
+              from: sortedAppointments[j].to.format('HH:mm'),
+              to: sortedAppointments[j + 1].from.format('HH:mm'),
+            });
+          }
         }
       }
     }
   }
+
 }
