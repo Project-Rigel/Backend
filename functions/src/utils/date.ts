@@ -12,3 +12,7 @@ export const getDateFromFormattedDate = (source: string) => {
     .month(tokens[1])
     .date(Number.parseInt(tokens[0]));
 };
+
+export const getFormattedHHMm = (source: Date) =>{
+  return moment(source).format("HH:mm").toString();
+}

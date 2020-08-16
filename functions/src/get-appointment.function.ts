@@ -1,14 +1,14 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { GetAppointmentDto } from './models/get-appointment.dto';
+import { GetAppointmentDto } from './dtos/get-appointment.dto';
 import { getFormattedDateDMY } from './utils/date';
 import { validateDto } from './utils/dto-validator';
 import { generateId } from './utils/uid-generator';
-import moment = require('moment');
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Appointment } from './models/appointment';
 import { Product } from './models/product';
 import { Customer } from './models/customer';
+import moment = require('moment');
 
 const db = admin.firestore();
 
@@ -45,14 +45,24 @@ export const getAppointmentFunction = functions.region("europe-west1").https.onC
     if (!timesDoc)
       throw new HttpsError('internal', 'No times doc created');
 
-    if (timesDoc.appointments[getFormattedDateDMY(appointment.startDate)]) {
+    if (timesDoc.appointments[appointment.startDate.toISOString()]) {
       throw new HttpsError('already-exists', 'The interval to make the appointment is already booked.');
     }
 
     try {
       await performBatchWrite(dto, formattedDate, appointmentId, appointment);
 
-      return { appointment: appointment };
+      const appointmentResponse: any = {
+        startDate: appointment.startDate.toJSON(),
+        endDate: appointment.endDate.toJSON(),
+        customerName: appointment.customerName,
+        name: appointment.name,
+        customerId: appointment.customerId,
+        id: appointment.id,
+        duration: appointment.duration
+      };
+
+      return { appointment: appointmentResponse };
     } catch (error) {
       throw new HttpsError('internal', error.message);
 
@@ -63,20 +73,20 @@ export const getAppointmentFunction = functions.region("europe-west1").https.onC
 async function performBatchWrite(dto: GetAppointmentDto, formattedDate: string, appointmentId: string, appointment: Appointment) {
   const batchWrite = db.batch();
 
-  //write in the business side
+  //write in the business side for agenda management
   batchWrite.set(getBusinessAppointmentsDoc(dto, formattedDate), {
     [appointmentId]: appointment,
   }, { merge: true });
 
 
-  //write in the appointments public doc
+  //write in the appointments public doc for public querying
   batchWrite.set(getTimesAppointmentsDoc(dto, formattedDate), {
     appointments: {
-      [getFormattedDateDMY(appointment.startDate)]: appointment.endDate,
+      [appointment.startDate.toISOString()]: appointment.endDate.toISOString(),
     },
   }, { merge: true });
 
-  //write in the customer appointments subcollection
+  //write in the customer appointments subcollection for private an easy access querying
   batchWrite.set(getCustomerAppointmentsDoc(dto, appointmentId), appointment);
 
   await batchWrite.commit();

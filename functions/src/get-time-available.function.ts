@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { GetAvailableTimesDto } from './models/get-available-times.dto';
+import { GetAvailableTimesDto } from './dtos/get-available-times.dto';
 import * as moment from 'moment';
 import { AppointmentInterval } from './models/appointment-interval';
 import { appointmentComparer } from './utils/intervals-sorting';
@@ -9,6 +9,7 @@ import { validateDto } from './utils/dto-validator';
 import { getFormattedDateDMY } from './utils/date';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Product } from './models/product';
+import { getAvailableTimesForDayInAgenda } from './utils/intervals-utils';
 
 export const getTimeAvailableFunction = functions.region('europe-west1').https.onCall(async (data, ctx) => {
 
@@ -22,21 +23,9 @@ export const getTimeAvailableFunction = functions.region('europe-west1').https.o
     throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
   }
 
+  const date:Date = new Date(dto.timestamp);
 
-  const formattedDate = getFormattedDateDMY(new Date(dto.timestamp));
-
-  //1. Read if the avaliable time is created;
-  const timesDoc = await admin.firestore()
-    .doc(`agendas/${dto.agendaId}/times/${formattedDate}-${dto.agendaId}`).get();
-
-  let times;
-
-  if (!timesDoc.exists) {
-    await createTimesDocument(dto, formattedDate, timesDoc);
-    times = (await timesDoc.ref.get()).data();
-  } else {
-    times = timesDoc.data();
-  }
+  let times = await getAvailableTimesForDayInAgenda(dto, date);
 
   if (!times) {
     throw new HttpsError('internal', 'There are no avaliable time intervals for this combo.');
@@ -46,90 +35,33 @@ export const getTimeAvailableFunction = functions.region('europe-west1').https.o
 
   const response: { from: string, to: string }[] = [];
 
-  if (dto.productId) {
-    let productDocRef = await admin.firestore().collection('products').doc(dto.productId).get();
-    const productData = productDocRef.data();
+    const productData = (await admin.firestore().collection('products').doc(dto.productId).get()).data();
+
     if (!productData) {
       throw new HttpsError('invalid-argument', 'There is no product associated with that Id.');
     }
+
     computeIntervals(availableIntervals, sortedAppointments, response, productData as Product);
-  } else {
-    computeIntervals(availableIntervals, sortedAppointments, response, null);
-
-  }
-
 
   return { intervals: response };
 
 });
 
 
-async function createSortedIntervals(parentData: FirebaseFirestore.DocumentData, intervals: object[], formattedDate: string, timesDoc: any) {
-  Object.keys(parentData.intervals[formattedDate]).forEach(key => {
-    intervals.push({
-      day: formattedDate,
-      dayOfWeek: null,
-      from: key,
-      to: parentData.intervals[formattedDate][key],
-    });
-  });
-  await timesDoc.ref.set({ availableTimes: intervals, appointments: [] }, { merge: true });
-}
-
-async function setDocumentAvailableIntervals(parentData: FirebaseFirestore.DocumentData, dayOfWeek: number, intervals: object[], timesDoc: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>, formattedDate: string, dto: GetAvailableTimesDto) {
-  Object.keys(parentData.intervals[dayOfWeek]).forEach(key => {
-    intervals.push({
-      day: null,
-      dayOfWeek: dayOfWeek,
-      from: key,
-      to: parentData.intervals[dayOfWeek][key],
-    });
-  });
-  await timesDoc.ref.set({
-    id: `${formattedDate}-${dto.agendaId}`,
-    availableTimes: intervals,
-    appointments: [],
-  }, { merge: true });
-}
-
-async function createTimesDocument(dto: GetAvailableTimesDto, formattedDate: string, timesDoc: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>) {
-  const dayOfWeek = new Date(dto.timestamp).getDay();
-
-  const parent = await admin.firestore()
-    .doc(`agendas/${dto.agendaId}`).get();
-
-  let intervals: object[] = [];
-
-  const parentData = parent.data() ?? undefined;
-
-  if (!parentData) {
-    throw new HttpsError('internal', 'The doc is not owned by a business.');
-  }
-  if (parentData.intervals) {
-    if (parentData.intervals[formattedDate]) {
-      await createSortedIntervals(parentData, intervals, formattedDate, timesDoc);
-    } else if (parentData.intervals[dayOfWeek]) {
-      await setDocumentAvailableIntervals(parentData, dayOfWeek, intervals, timesDoc, formattedDate, dto);
-    } else {
-      throw new HttpsError('invalid-argument', 'The agenda you are trying to book in does not have a config for the day you are trying to book. Please contact the business owner to set it up.');
-    }
-  }
-}
-
 function transformIntervalsToMoments(times: FirebaseFirestore.DocumentData): { sortedAppointments: AppointmentInterval[], availableIntervals: AvailableInterval[] } {
   const appointments = times.appointments ?? [];
   let sortedAppointments: AppointmentInterval[] = [];
   Object.keys(appointments).sort().forEach(elem => {
-    sortedAppointments.push({ from: moment(elem, 'HH:mm'), to: moment(appointments[elem], 'HH:mm') });
+    sortedAppointments.push({ from: moment(elem), to: moment(appointments[elem]) });
   });
 
   //TODO convert hours to moment for all arrays
-  const availableIntervals = times.availableTimes.map((val: AvailableInterval) => {
+  const availableIntervals: AvailableInterval[] = times.availableTimes.map((val: AvailableInterval) => {
     return {
       dayOfWeek: val.dayOfWeek,
       day: val.day,
-      from: moment(val.from, 'HH:mm'),
-      to: moment(val.to, 'HH:mm'),
+      from: moment(new Date(val.from)),
+      to: moment(new Date(val.to)),
     };
   }).sort(appointmentComparer);
   return { sortedAppointments, availableIntervals };
@@ -141,8 +73,8 @@ function computeIntervals(availableIntervals: AvailableInterval[], sortedAppoint
   if (sortedAppointments.length <= 0) {
     for (let i = 0; i < availableIntervals.length; i++) {
       response.push({
-        from: availableIntervals[i].from.format('HH:mm'),
-        to: availableIntervals[i].to.format('HH:mm'),
+        from: availableIntervals[i].from.format("HH:mm"),
+        to: availableIntervals[i].to.format("HH:mm"),
       });
     }
   } else {

@@ -6,7 +6,8 @@ export interface Type<T> extends Function {
 }
 
 export async function validateDto<T>(type: Type<T>, obj: any) {
+
   const dto: T = plainToClass(type, obj);
-  const errors = await validate(dto);
+  const errors = await validate(dto, { validationError: { target: false }});
   return { dto, errors };
 }

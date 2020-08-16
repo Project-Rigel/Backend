@@ -9,10 +9,10 @@
     "serve:debug": "npm run serve -- --inspect-functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase deploy --only ",
+    "deploy": "firebase deploy --only",
     "logs": "firebase functions:log",
     "lint": "eslint src/**/*.ts --fix",
-    "format" : "prettier src/**/*.ts --write"
+    "format": "prettier src/**/*.ts --write"
   },
   "engines": {
     "node": "8"

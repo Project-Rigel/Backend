@@ -1,4 +1,4 @@
-import { IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsString } from 'class-validator';
 
 export class GetAvailableTimesDto {
   @IsString()
@@ -6,9 +6,9 @@ export class GetAvailableTimesDto {
 
   @IsString()
   agendaId!: string;
+
   @IsString()
-  @IsOptional()
-  productId?: string;
+  productId: string;
 
   @IsDateString()
   timestamp!: string;
