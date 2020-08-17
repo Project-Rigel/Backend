@@ -9,17 +9,17 @@
     "serve:debug": "npm run serve -- --inspect-functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase deploy --only ",
+    "deploy": "firebase deploy --only",
     "logs": "firebase functions:log",
     "lint": "eslint src/**/*.ts --fix",
-    "format" : "prettier src/**/*.ts --write"
+    "format": "prettier src/**/*.ts --write"
   },
   "engines": {
     "node": "8"
   },
   "main": "lib/index.js",
   "dependencies": {
-    "class-transformer": "^0.2.3",
+    "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "firebase-admin": "^8.12.1",
     "firebase-functions": "^3.6.1",

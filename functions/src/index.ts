@@ -14,9 +14,10 @@ import 'reflect-metadata';
 import { getTimeAvailableFunction } from './get-time-available.function';
 import { getAppointmentFunction } from './get-appointment.function';
 import { getOpenDaysForMonth } from './get-open-days-for-month';
+import { setAgendaScheduleSettings } from './add-schedule-settings-to-agenda';
 
 
 exports.getAvaliableTimeIntervals = getTimeAvailableFunction;
 exports.bookAppointment = getAppointmentFunction;
 exports.getAvaliableDaysInMonth = getOpenDaysForMonth;
-
+exports.setAgendaScheduleSettings = setAgendaScheduleSettings;

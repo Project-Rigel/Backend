@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { validateDto } from './utils/dto-validator';
 import * as admin from 'firebase-admin';
-import { GetAvailableDaysDto } from './models/get-available-days.dto';
+import { GetAvailableDaysDto } from './dtos/get-available-days.dto';
 import moment = require('moment');
 import { getDateFromFormattedDate } from './utils/date';
 
