@@ -35,10 +35,12 @@ export const setAgendaScheduleSettings = functions.region("europe-west1").https.
       const specificDate =  dto.specificDate ? moment(dto.specificDate).hour(0).minute(0).second(0).toISOString() : null;
 
       const intervals  = {
+        // @ts-ignore
         [ dto.dayOfWeek ? DayOfWeek[dto.dayOfWeek] : specificDate]: {}
       }
 
       for (let i = 0; i < dto.intervals.length; i++) {
+        // @ts-ignore
         intervals[dto.dayOfWeek ? DayOfWeek[dto.dayOfWeek] : specificDate][dto.intervals[i].startHour] = dto.intervals[i].endHour;
       }
       await agendaRef.set({intervals: intervals}, {merge: true});

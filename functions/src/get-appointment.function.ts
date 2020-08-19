@@ -47,8 +47,6 @@ export const getAppointmentFunction = functions.region("europe-west1").https.onC
     if (!timesDoc)
       throw new HttpsError('internal', 'No times doc created');
 
-    if (timesDoc.appointments[getFormattedDateDMY(appointment.startDate)]) {
-
     if (timesDoc.appointments[appointment.startDate.toISOString()]) {
 
       throw new HttpsError('already-exists', 'The interval to make the appointment is already booked.');
@@ -72,7 +70,7 @@ export const getAppointmentFunction = functions.region("europe-west1").https.onC
       throw new HttpsError('internal', error.message);
 
     }
-  }
+
   }
 );
 
