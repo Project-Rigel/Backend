@@ -3,11 +3,14 @@ import * as admin from 'firebase-admin';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { getFormattedDateDMY } from './date';
 
-export const createSortedIntervals = async (parentData: FirebaseFirestore.DocumentData,
-                                            intervals: object[],
-                                            date: Date,
-                                            timesDoc: any) => {
-  Object.keys(parentData.intervals[date.toISOString()]).forEach(key => {
+export const createTimesDocWithDateAvaliableInterval = async (
+  parentData: FirebaseFirestore.DocumentData,
+  intervals: object[],
+  date: Date,
+  timesDoc: any,
+  dto: GetAvailableTimesDto,
+) => {
+  Object.keys(parentData.intervals[date.toISOString()]).forEach((key) => {
     intervals.push({
       day: date.toISOString(),
       dayOfWeek: null,
@@ -15,14 +18,25 @@ export const createSortedIntervals = async (parentData: FirebaseFirestore.Docume
       to: parentData.intervals[date.toISOString()][key],
     });
   });
-  await timesDoc.ref.set({ availableTimes: intervals, appointments: [] }, { merge: true });
+  await timesDoc.ref.set(
+    {
+      id: `${getFormattedDateDMY(date)}-${dto.agendaId}`,
+      availableTimes: intervals,
+      appointments: [],
+    },
+    { merge: true },
+  );
 };
 
-export const setDocumentAvailableIntervals = async (parentData: FirebaseFirestore.DocumentData,
-                                                    dayOfWeek: number, intervals: object[],
-                                                    timesDoc: FirebaseFirestore.DocumentSnapshot,
-                                                    date: Date, dto: GetAvailableTimesDto) => {
-  Object.keys(parentData.intervals[dayOfWeek]).forEach(key => {
+export const createTimesDocWithDayOfWeekAvaliableInterval = async (
+  parentData: FirebaseFirestore.DocumentData,
+  dayOfWeek: number,
+  intervals: object[],
+  timesDoc: FirebaseFirestore.DocumentSnapshot,
+  date: Date,
+  dto: GetAvailableTimesDto,
+) => {
+  Object.keys(parentData.intervals[dayOfWeek]).forEach((key) => {
     intervals.push({
       day: null,
       dayOfWeek: dayOfWeek,
@@ -30,16 +44,22 @@ export const setDocumentAvailableIntervals = async (parentData: FirebaseFirestor
       to: parentData.intervals[dayOfWeek][key],
     });
   });
-  await timesDoc.ref.set({
-    id: `${getFormattedDateDMY(date)}-${dto.agendaId}`,
-    availableTimes: intervals,
-    appointments: [],
-  }, { merge: true });
+  await timesDoc.ref.set(
+    {
+      id: `${getFormattedDateDMY(date)}-${dto.agendaId}`,
+      availableTimes: intervals,
+      appointments: [],
+    },
+    { merge: true },
+  );
 };
 
 export const getAvailableTimesForDayInAgenda = async (dto: GetAvailableTimesDto, date: Date) => {
-  const timesDoc = await admin.firestore()
-    .doc(`agendas/${dto.agendaId}/times/${getFormattedDateDMY(date)}-${dto.agendaId}`).get();
+  //get the document that holds the available times for that day. This document holds the available times given by the config of the agenda and the confirmed appointments.
+  const timesDoc = await admin
+    .firestore()
+    .doc(`agendas/${dto.agendaId}/times/${getFormattedDateDMY(date)}-${dto.agendaId}`)
+    .get();
 
   let times;
 
@@ -52,11 +72,14 @@ export const getAvailableTimesForDayInAgenda = async (dto: GetAvailableTimesDto,
   return times;
 };
 
-export const createTimesDocument = async (dto: GetAvailableTimesDto, date: Date, timesDoc: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>) => {
+export const createTimesDocument = async (
+  dto: GetAvailableTimesDto,
+  date: Date,
+  timesDoc: FirebaseFirestore.DocumentSnapshot,
+) => {
   const dayOfWeek = new Date(dto.timestamp).getDay();
 
-  const parent = await admin.firestore()
-    .doc(`agendas/${dto.agendaId}`).get();
+  const parent = await admin.firestore().doc(`agendas/${dto.agendaId}`).get();
 
   let intervals: object[] = [];
 
@@ -65,13 +88,19 @@ export const createTimesDocument = async (dto: GetAvailableTimesDto, date: Date,
   if (!parentData) {
     throw new HttpsError('internal', 'The doc is not owned by a business.');
   }
+
   if (parentData.intervals) {
-    if (parentData.intervals[date.toISOString()]) {
-      await createSortedIntervals(parentData, intervals, date, timesDoc);
+    //the interval can be a specific date or a day of week. We need to normalize the date because we store the key as ISO string.
+    const normalizedDate = date.setHours(0, 0, 0, 0);
+    if (parentData.intervals[normalizedDate]) {
+      await createTimesDocWithDateAvaliableInterval(parentData, intervals, date, timesDoc, dto);
     } else if (parentData.intervals[dayOfWeek]) {
-      await setDocumentAvailableIntervals(parentData, dayOfWeek, intervals, timesDoc, date, dto);
+      await createTimesDocWithDayOfWeekAvaliableInterval(parentData, dayOfWeek, intervals, timesDoc, date, dto);
     } else {
-      throw new HttpsError('invalid-argument', 'The agenda you are trying to book in does not have a config for the day you are trying to book. Please contact the business owner to set it up.');
+      throw new HttpsError(
+        'invalid-argument',
+        'The agenda you are trying to book in does not have a config for the day you are trying to book. Please contact the business owner to set it up.',
+      );
     }
   }
 };
