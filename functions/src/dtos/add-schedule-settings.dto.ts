@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { IsHourInHHmmFormat } from '../utils/is-interval-validator';
 
 export enum DayOfWeek {
-  Sunday= 0 ,
+  Sunday = 0,
   Monday,
   Tuesday,
   Wednesday,
@@ -12,22 +12,19 @@ export enum DayOfWeek {
   Saturday,
 }
 
-
 export class Interval {
   @IsString()
-  @Length(5,5)
+  @Length(5, 5)
   @IsHourInHHmmFormat()
   startHour: string;
 
   @IsString()
-  @Length(5,5)
+  @Length(5, 5)
   @IsHourInHHmmFormat()
   endHour: string;
 }
 
-
-export class AddScheduleSettingsDto{
-
+export class AddScheduleSettingsDto {
   /**
    * The id of the agenda you want to configure.
    */
@@ -45,7 +42,7 @@ export class AddScheduleSettingsDto{
    */
   @IsEnum(DayOfWeek)
   @IsOptional()
-  public readonly dayOfWeek?:string;
+  public readonly dayOfWeek?: string;
 
   /**
    * Specific date for intervals. This field lets you specify a certain date for overwriting the default behaviour.
@@ -55,10 +52,9 @@ export class AddScheduleSettingsDto{
   public readonly specificDate?: string;
 
   /**
-   * An array of intervals describing the available appoinment times.
+   * An array of intervals describing the available appointment times.
    */
-  @ValidateNested({each:true})
+  @ValidateNested({ each: true })
   @Type(() => Interval)
   public readonly intervals: Interval[];
-
 }
