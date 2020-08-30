@@ -61,15 +61,36 @@ export const getAvailableTimesForDayInAgenda = async (dto: GetAvailableTimesDto,
     .doc(`agendas/${dto.agendaId}/times/${getFormattedDateDMY(date)}-${dto.agendaId}`)
     .get();
 
-  let times;
+  let agendaDoc = await admin.firestore().doc(`agendas/${dto.agendaId}`).get();
+  const timesData = agendaDoc.data() ?? {};
+
+  const intervals: any[] = [];
+
+  Object.keys(agendaDoc.data().intervals).forEach((key) => {
+    if (key === dto.timestamp) {
+      intervals.push({
+        day: dto.timestamp,
+        dayOfWeek: null,
+        from: timesData.intervals[key],
+        to: null,
+      });
+    } else if (new Date(dto.timestamp).getDay().toString() === key) {
+      Object.keys(timesData.intervals[key]).forEach((intervalKey) => {
+        intervals.push({
+          day: null,
+          dayOfWeek: new Date(dto.timestamp).getDay(),
+          from: intervalKey,
+          to: timesData.intervals[key][intervalKey],
+        });
+      });
+    }
+  });
 
   if (!timesDoc.exists) {
     await createTimesDocument(dto, date, timesDoc);
-    times = (await timesDoc.ref.get()).data();
-  } else {
-    times = timesDoc.data();
   }
-  return times;
+
+  return { availableTimes: intervals, appointments: timesDoc.data().appointments, id: timesDoc.data().id };
 };
 
 export const createTimesDocument = async (

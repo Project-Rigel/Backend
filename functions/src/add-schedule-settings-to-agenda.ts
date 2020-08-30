@@ -50,6 +50,29 @@ export const setAgendaScheduleSettings = functions.region('europe-west1').https.
 
     await agendaRef.set({ intervals: intervals }, { merge: true });
 
+    // const timesDocs = await db.collection('agendas').doc(dto.agendaId).collection('times').get();
+    //
+    // if (timesDocs.size > 0) {
+    //   const timesIntervals = [];
+    //
+    //   if (dto.specificDate) {
+    //   }
+    //   timesIntervals.push({
+    //     day: null,
+    //     dayOfWeek: dayOfWeek,
+    //     from: key,
+    //     to: parentData.intervals[dayOfWeek][key],
+    //   });
+    //   timesDocs.forEach((elem) => {
+    //     elem.ref.set(
+    //       {
+    //         availableTimes: intervals,
+    //       },
+    //       { merge: true },
+    //     );
+    //   });
+    // }
+
     return 'Ok';
   } catch (e) {
     throw new HttpsError('internal', e.toString());
