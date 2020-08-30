@@ -12,9 +12,10 @@ import { Product } from './models/product';
 import { getAvailableTimesForDayInAgenda } from './utils/intervals-utils';
 
 export const getTimeAvailableFunction = functions.region('europe-west1').https.onCall(async (data, ctx) => {
-  // if (!ctx.auth) {
-  //   throw new HttpsError('unauthenticated', 'Unauthorized');
-  // }
+
+  if (!ctx.auth) {
+    throw new HttpsError('unauthenticated', 'Unauthorized');
+  }
 
   const { errors, dto } = await validateDto<GetAvailableTimesDto>(GetAvailableTimesDto, data);
 
@@ -32,16 +33,13 @@ export const getTimeAvailableFunction = functions.region('europe-west1').https.o
 
   let { sortedAppointments, availableIntervals } = transformIntervalsToMoments(times, dto.timestamp);
 
-  const response: { from: string; to: string }[] = [];
-
   const productData = (await admin.firestore().collection('products').doc(dto.productId).get()).data();
 
   if (!productData) {
     throw new HttpsError('invalid-argument', 'There is no product associated with that Id.');
   }
 
-  computeIntervals(availableIntervals, sortedAppointments, response);
-  const newResponse = applyProductDurationToResponse(response, productData as Product, dto.timestamp);
+    computeIntervals(availableIntervals, sortedAppointments, response, productData as Product);
 
   return { intervals: newResponse };
 });
