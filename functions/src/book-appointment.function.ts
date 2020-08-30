@@ -14,9 +14,9 @@ import moment = require('moment');
 const db = admin.firestore();
 
 export const bookAppointmentFunction = functions.region('europe-west1').https.onCall(async (data, ctx) => {
-  // if (!ctx.auth) {
-  //   throw new HttpsError('unauthenticated', 'Unauthorized');
-  // }
+  if (!ctx.auth) {
+    throw new HttpsError('unauthenticated', 'Unauthorized');
+  }
 
   //validate the dto
   const { dto, errors } = await validateDto<GetAppointmentDto>(GetAppointmentDto, data);
