@@ -50,7 +50,7 @@ export function computeIntervals(
             const diff = availableIntervals[i].to
               .utc()
               .diff(sortedAppointments[j].to.utc(), 'minutes');
-            if (j === sortedAppointments.length - 1 && diff >= 0) {
+            if (j === sortedAppointments.length - 1 && diff > 0) {
               response.push({
                 from: sortedAppointments[j].to.utc().format('HH:mm'),
                 to: availableIntervals[i].to.utc().format('HH:mm'),

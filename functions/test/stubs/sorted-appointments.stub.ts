@@ -3,19 +3,28 @@ import * as moment from 'moment';
 
 export class SortedAppointmentsStub {
   static getOneAppointmentMorningOneEvening(duration: number): AppointmentInterval[] {
-    const startMoment = moment.utc().hours(9).minutes(0).seconds(0).milliseconds(0);
+    const firstAppointmentStartMoment = moment
+      .utc()
+      .hours(11)
+      .minutes(0)
+      .seconds(0)
+      .milliseconds(0);
+    const firstAppointmentEndMoment = moment(firstAppointmentStartMoment).add(duration, 'minutes');
 
-    const secondAppointmentStartMoment = startMoment.utc().add(7, 'hours');
+    const secondAppointmentStartMoment = moment(firstAppointmentEndMoment).utc().add(5, 'hours');
+    const secondAppointmentEndMoment = moment(secondAppointmentStartMoment)
+      .utc()
+      .add(duration, 'minutes');
 
     return [
       {
-        from: startMoment.utc(),
-        to: startMoment.utc().(120, 'minutes'),
+        from: firstAppointmentStartMoment.utc(),
+        to: firstAppointmentEndMoment.utc(),
       },
 
       {
         from: secondAppointmentStartMoment.utc(),
-        to: secondAppointmentStartMoment.utc().add(120, 'minutes'),
+        to: secondAppointmentEndMoment.utc(),
       },
     ];
   }

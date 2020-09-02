@@ -7,14 +7,14 @@ export class AvaliableIntervalsStub {
       {
         day: null,
         dayOfWeek: dayOfWeek,
-        from: moment.utc().hours(9).minutes(0).seconds(0).milliseconds(0),
-        to: moment.utc().hours(14).minutes(0).seconds(0).milliseconds(0),
+        from: moment.utc().hours(9).minutes(0).seconds(0).milliseconds(0).utc(),
+        to: moment.utc().hours(14).minutes(0).seconds(0).milliseconds(0).utc(),
       },
       {
         day: null,
         dayOfWeek: dayOfWeek,
-        from: moment.utc().hours(16).minutes(0).seconds(0).milliseconds(0),
-        to: moment.utc().hours(20).minutes(0).seconds(0).milliseconds(0),
+        from: moment.utc().hours(16).minutes(0).seconds(0).milliseconds(0).utc(),
+        to: moment.utc().hours(20).minutes(0).seconds(0).milliseconds(0).utc(),
       },
     ];
   }
