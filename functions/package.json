@@ -12,7 +12,8 @@
     "deploy": "firebase deploy --only",
     "logs": "firebase functions:log",
     "lint": "eslint src/**/*.ts --fix",
-    "format": "prettier src/**/*.ts --write"
+    "format": "prettier src/**/*.ts --write",
+    "test": "npx jest"
   },
   "engines": {
     "node": "8"
@@ -27,13 +28,16 @@
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.10",
     "@typescript-eslint/eslint-plugin": "^3.7.1",
     "@typescript-eslint/parser": "^3.7.1",
     "eslint": "6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-import": "2.20.1",
     "firebase-functions-test": "^0.2.0",
+    "jest": "^26.4.2",
     "prettier": "^2.0.5",
+    "ts-jest": "^26.3.0",
     "typescript": "^3.8.0"
   },
   "private": true
