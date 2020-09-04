@@ -45,26 +45,29 @@ export function computeIntervals(
               from: availableIntervals[i].from.utc().format('HH:mm'),
               to: sortedAppointments[j].from.utc().format('HH:mm'),
             });
-
-            // si es el final de las citas comprobamos si sobra tiempo al final.
-            const diff = availableIntervals[i].to
-              .utc()
-              .diff(sortedAppointments[j].to.utc(), 'minutes');
-            if (j === sortedAppointments.length - 1 && diff > 0) {
-              response.push({
-                from: sortedAppointments[j].to.utc().format('HH:mm'),
-                to: availableIntervals[i].to.utc().format('HH:mm'),
-              });
-            }
           }
-          // else if (sortedAppointments.length === 1) {
-          //   response.push({
-          //     from: sortedAppointments[j].to.utc().format('HH:mm'),
-          //     to: availableIntervals[i].to.utc().format('HH:mm'),
-          //   });
-          // }
-          //si no es el primer evento.
-        } else {
+
+          // si es el final de las citas comprobamos si sobra tiempo al final.
+          const diffToEnd = availableIntervals[i].to
+            .utc()
+            .diff(sortedAppointments[j].to.utc(), 'minutes');
+          if (j === sortedAppointments.length - 1 && diffToEnd > 0) {
+            response.push({
+              from: sortedAppointments[j].to.utc().format('HH:mm'),
+              to: availableIntervals[i].to.utc().format('HH:mm'),
+            });
+          } else if (
+            sortedAppointments[j].to.utc() < availableIntervals[i].to.utc() &&
+            sortedAppointments.length === 1
+          ) {
+            response.push({
+              from: sortedAppointments[j].to.utc().format('HH:mm'),
+              to: availableIntervals[i].to.utc().format('HH:mm'),
+            });
+          }
+        }
+        //si no es el primer evento.
+        else {
           // //miramos hacia delante y comprobamos que no nos salgamos del array ni del intervalo.
           // if (j + 1 < ordered.length && ordered[j + 1].from > availableTimes[i].to){
           //     response.push({from: ordered[j].to, to: availableTimes[i].to})
