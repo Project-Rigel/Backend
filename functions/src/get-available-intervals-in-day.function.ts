@@ -1,21 +1,11 @@
 import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
-import { GetAvailableTimesDto } from './dtos/get-available-times.dto';
-import * as moment from 'moment';
-import { AppointmentInterval } from './models/appointment-interval';
-import { appointmentComparer } from './utils/intervals-sorting';
-import { AvailableInterval } from './models/available-interval';
-import { validateDto } from './utils/dto-validator';
-import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { Product } from './models/product';
+import { AgendaService } from './services/agenda.service';
 
-import { getAvailableTimesForDayInAgenda } from './utils/intervals-utils';
-import { computeIntervals } from './utils/intervals-computer';
-
-export const getTimeAvailableFunction = functions
+export const getAvailableIntervalsInDayFunction = functions
   .region('europe-west1')
   .https.onCall(async (data, ctx) => {
-    if (!ctx.auth) {
+    console.log(await new AgendaService().getAgendaIntervalsForWeekDay('AZNVcZzTz5F9yLkxx96h', 5));
+    /*    if (!ctx.auth) {
       throw new HttpsError('unauthenticated', 'Unauthorized');
     }
 
@@ -55,9 +45,10 @@ export const getTimeAvailableFunction = functions
       dto.timestamp,
     );
 
-    return { intervals: newResponse };
+    return { intervals: newResponse };*/
   });
 
+/*
 function transformIntervalsToMoments(
   times: FirebaseFirestore.DocumentData,
   timestampIsoFormat: string,
@@ -143,3 +134,4 @@ function applyProductDurationToResponse(
 
   return newResponse;
 }
+*/
