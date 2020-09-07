@@ -1,4 +1,3 @@
-//TODO compare using momentjs dates
 import { Appointment } from '../models/appointment';
 
 export function appointmentComparer(a: Appointment, b: Appointment) {
