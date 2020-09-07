@@ -19,7 +19,7 @@ export const bookAppointmentFunction = functions
     if (!ctx.auth) {
       throw new HttpsError('unauthenticated', 'Unauthorized');
     }
-    //validate the dto
+
     const { dto, errors } = await validateDto<GetAppointmentDto>(GetAppointmentDto, data);
 
     if (errors.length > 0) {
