@@ -1,13 +1,13 @@
-import { AvailableInterval } from '../models/available-interval';
+import { AgendaIntervalSetting } from '../models/agenda-interval-setting';
 import * as admin from 'firebase-admin';
 import moment = require('moment');
 
 export class AgendaService {
-  public async getAgendaIntervals(agendaId: string): Promise<AvailableInterval[]> {
+  public async getAgendaIntervals(agendaId: string): Promise<AgendaIntervalSetting[]> {
     let agendaDoc = await admin.firestore().doc(`agendas/${agendaId}`).get();
     const timesData = agendaDoc.data() ?? {};
 
-    const intervals: AvailableInterval[] = [];
+    const intervals: AgendaIntervalSetting[] = [];
 
     Object.keys(agendaDoc.data().intervals).forEach((key) => {
       Object.keys(timesData.intervals[key]).forEach((intervalKey) => {
@@ -25,13 +25,13 @@ export class AgendaService {
 
   public async getAgendaIntervalsForWeekDay(
     agendaId: string,
-    weekDay: number,
-  ): Promise<AvailableInterval[]> {
+    timestamp: string,
+  ): Promise<AgendaIntervalSetting[]> {
     let agendaDoc = await admin.firestore().doc(`agendas/${agendaId}`).get();
     const timesData = agendaDoc.data() ?? {};
 
-    const intervals: AvailableInterval[] = [];
-
+    const intervals: AgendaIntervalSetting[] = [];
+    const weekDay = new Date(timestamp).getDay();
     Object.keys(agendaDoc.data().intervals).forEach((key) => {
       Object.keys(timesData.intervals[key]).forEach((intervalKey) => {
         if (weekDay === Number(key))
@@ -44,6 +44,28 @@ export class AgendaService {
       });
     });
 
+    return this.adjustMomentsToTimestamp(intervals, timestamp);
+  }
+
+  private adjustMomentsToTimestamp(intervals: AgendaIntervalSetting[], timestamp: string) {
+    const dayMoment = moment.utc(timestamp);
+
+    intervals.map((val) => {
+      return {
+        dayOfWeek: val.dayOfWeek,
+        day: val.day,
+        from: val.from.set({
+          year: dayMoment.year(),
+          month: dayMoment.month(),
+          date: dayMoment.date(),
+        }),
+        to: val.to.set({
+          year: dayMoment.year(),
+          month: dayMoment.month(),
+          date: dayMoment.date(),
+        }),
+      };
+    });
     return intervals;
   }
 }

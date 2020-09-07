@@ -1,6 +1,8 @@
+import { Moment } from 'moment';
+
 export interface Appointment {
-  startDate: Date;
-  endDate: Date;
+  startDate: Moment;
+  endDate: Moment;
   name: string;
   customerId: string;
   customerName: string;

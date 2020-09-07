@@ -1,8 +1,8 @@
-import { AvailableInterval } from '../models/available-interval';
+import { AgendaIntervalSetting } from '../models/agenda-interval-setting';
 import { AppointmentInterval } from '../models/appointment-interval';
 
 export function computeIntervals(
-  availableIntervals: AvailableInterval[],
+  availableIntervals: AgendaIntervalSetting[],
   sortedAppointments: AppointmentInterval[],
   response: { from: string; to: string }[],
 ) {
@@ -97,7 +97,7 @@ export function computeIntervals(
 }
 
 function addDefaultIntervals(
-  availableIntervals: AvailableInterval[],
+  availableIntervals: AgendaIntervalSetting[],
   response: { from: string; to: string }[],
 ) {
   for (let i = 0; i < availableIntervals.length; i++) {

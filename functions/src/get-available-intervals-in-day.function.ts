@@ -1,11 +1,20 @@
 import * as functions from 'firebase-functions';
+import { AppointmentService } from './services/appointments.service';
+import { GetAvailableTimesDto } from './dtos/get-available-times.dto';
+import { validateDto } from './utils/dto-validator';
+import { AvailableIntervalsComputer } from './use-cases/available-intervals-computer';
 import { AgendaService } from './services/agenda.service';
+import { ProductService } from './services/product.service';
+import { HttpsError } from 'firebase-functions/lib/providers/https';
+const appointmentService = new AppointmentService();
+const agendaService = new AgendaService();
+const productService = new ProductService();
+const useCase = new AvailableIntervalsComputer();
 
 export const getAvailableIntervalsInDayFunction = functions
   .region('europe-west1')
   .https.onCall(async (data, ctx) => {
-    console.log(await new AgendaService().getAgendaIntervalsForWeekDay('AZNVcZzTz5F9yLkxx96h', 5));
-    /*    if (!ctx.auth) {
+    if (!ctx.auth) {
       throw new HttpsError('unauthenticated', 'Unauthorized');
     }
 
@@ -15,37 +24,19 @@ export const getAvailableIntervalsInDayFunction = functions
       throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
     }
 
-    const date: Date = new Date(dto.timestamp);
-
-    let times = await getAvailableTimesForDayInAgenda(dto, date);
-
-    if (!times) {
-      throw new HttpsError('internal', 'There are no avaliable time intervals for this combo.');
-    }
-
-    let { sortedAppointments, availableIntervals } = transformIntervalsToMoments(
-      times,
+    const intervals = await agendaService.getAgendaIntervalsForWeekDay(dto.agendaId, dto.timestamp);
+    const appointments = await appointmentService.getSortedAppointmentsForDay(
+      'AZNVcZzTz5F9yLkxx96h',
       dto.timestamp,
     );
 
-    const response: { from: string; to: string }[] = [];
+    const product = await productService.getProduct(dto.productId);
 
-    const productData = (
-      await admin.firestore().collection('products').doc(dto.productId).get()
-    ).data();
-
-    if (!productData) {
+    if (!product) {
       throw new HttpsError('invalid-argument', 'There is no product associated with that Id.');
     }
 
-    computeIntervals(availableIntervals, sortedAppointments, response);
-    const newResponse = applyProductDurationToResponse(
-      response,
-      productData as Product,
-      dto.timestamp,
-    );
-
-    return { intervals: newResponse };*/
+    return useCase.invoke(intervals, appointments, product);
   });
 
 /*

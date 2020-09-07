@@ -1,14 +1,14 @@
-import { AppointmentInterval } from '../../src/models/appointment-interval';
 import * as moment from 'moment';
+import { Appointment } from '../../src/models/appointment';
 
 export class SortedAppointmentsStub {
   static getOneAppointmentMorningOneEvening(
     duration: number,
     startHourFirstAppointment: number,
     startHourSecondAppointment: number,
-  ): AppointmentInterval[] {
-    const firstAppointmentStartMoment = moment
-      .utc()
+  ): Appointment[] {
+    const firstAppointmentStartMoment = moment()
+      .utcOffset(0)
       .hours(startHourFirstAppointment)
       .minutes(0)
       .seconds(0)
@@ -16,24 +16,35 @@ export class SortedAppointmentsStub {
     const firstAppointmentEndMoment = moment(firstAppointmentStartMoment).add(duration, 'minutes');
 
     const secondAppointmentStartMoment = moment(firstAppointmentEndMoment)
-      .utc()
+      .utcOffset(0)
       .hours(startHourSecondAppointment)
       .minutes(0)
       .seconds(0)
       .milliseconds(0);
-    const secondAppointmentEndMoment = moment(secondAppointmentStartMoment)
-      .utc()
-      .add(duration, 'minutes');
+    const secondAppointmentEndMoment = moment(secondAppointmentStartMoment).add(
+      duration,
+      'minutes',
+    );
 
     return [
       {
-        from: firstAppointmentStartMoment.utc(),
-        to: firstAppointmentEndMoment.utc(),
+        startDate: firstAppointmentStartMoment.utc(),
+        endDate: firstAppointmentEndMoment.utc(),
+        customerName: 'a',
+        customerId: 'a',
+        name: 'hell',
+        duration: 30,
+        id: 'a',
       },
 
       {
-        from: secondAppointmentStartMoment.utc(),
-        to: secondAppointmentEndMoment.utc(),
+        startDate: secondAppointmentStartMoment.utc(),
+        endDate: secondAppointmentEndMoment.utc(),
+        customerName: 'a',
+        customerId: 'a',
+        name: 'hell',
+        duration: 30,
+        id: 'a',
       },
     ];
   }
@@ -43,17 +54,17 @@ export class SortedAppointmentsStub {
     startHourFirstAppointment: number,
     startHourSecondAppointment: number,
     startHourThirdAppointment: number,
-  ): AppointmentInterval[] {
-    const firstAppointmentStartMoment = moment
-      .utc()
+  ): Appointment[] {
+    const firstAppointmentStartMoment = moment()
+      .utcOffset(0)
       .hours(startHourFirstAppointment)
       .minutes(0)
       .seconds(0)
       .milliseconds(0);
     const firstAppointmentEndMoment = moment(firstAppointmentStartMoment).add(duration, 'minutes');
 
-    const secondAppointmentStartMoment = moment
-      .utc()
+    const secondAppointmentStartMoment = moment()
+      .utcOffset(0)
       .hours(startHourSecondAppointment)
       .minutes(0)
       .seconds(0)
@@ -63,8 +74,8 @@ export class SortedAppointmentsStub {
       .utc()
       .add(duration, 'minutes');
 
-    const thirdAppointmentStartMoment = moment
-      .utc()
+    const thirdAppointmentStartMoment = moment()
+      .utcOffset(0)
       .hours(startHourThirdAppointment)
       .minutes(0)
       .seconds(0)
@@ -76,18 +87,31 @@ export class SortedAppointmentsStub {
 
     return [
       {
-        from: firstAppointmentStartMoment.utc(),
-        to: firstAppointmentEndMoment.utc(),
+        startDate: firstAppointmentStartMoment.utc(),
+        endDate: firstAppointmentEndMoment.utc(),
+        customerName: 'a',
+        customerId: 'a',
+        name: 'hell',
+        duration: 30,
+        id: 'a',
       },
-
       {
-        from: secondAppointmentStartMoment.utc(),
-        to: secondAppointmentEndMoment.utc(),
+        startDate: secondAppointmentStartMoment.utc(),
+        endDate: secondAppointmentEndMoment.utc(),
+        customerName: 'a',
+        customerId: 'a',
+        name: 'hell',
+        duration: 30,
+        id: 'a',
       },
-
       {
-        from: thirdAppointmentStartMoment.utc(),
-        to: thirdAppointmentEndMoment.utc(),
+        startDate: thirdAppointmentStartMoment.utc(),
+        endDate: thirdAppointmentEndMoment.utc(),
+        customerName: 'a',
+        customerId: 'a',
+        name: 'hell',
+        duration: 30,
+        id: 'a',
       },
     ];
   }

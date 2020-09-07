@@ -13,7 +13,7 @@
     "logs": "firebase functions:log",
     "lint": "eslint src/**/*.ts --fix",
     "format": "prettier src/**/*.ts --write",
-    "test": "npx jest"
+    "test": "npx jest test/**/*.ts"
   },
   "engines": {
     "node": "10"
