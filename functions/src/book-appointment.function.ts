@@ -13,62 +13,70 @@ import moment = require('moment');
 
 const db = admin.firestore();
 
-export const bookAppointmentFunction = functions.region('europe-west1').https.onCall(async (data, ctx) => {
-  // if (!ctx.auth) {
-  //   throw new HttpsError('unauthenticated', 'Unauthorized');
-  // }
+export const bookAppointmentFunction = functions
+  .region('europe-west1')
+  .https.onCall(async (data, ctx) => {
+    if (!ctx.auth) {
+      throw new HttpsError('unauthenticated', 'Unauthorized');
+    }
+    //validate the dto
+    const { dto, errors } = await validateDto<GetAppointmentDto>(GetAppointmentDto, data);
 
-  //validate the dto
-  const { dto, errors } = await validateDto<GetAppointmentDto>(GetAppointmentDto, data);
+    if (errors.length > 0) {
+      throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
+    }
 
-  if (errors.length > 0) {
-    throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
-  }
+    const productData = (
+      await admin.firestore().collection('products').doc(dto.productId).get()
+    ).data();
 
-  const productData = (await admin.firestore().collection('products').doc(dto.productId).get()).data();
+    if (!productData) {
+      throw new HttpsError('invalid-argument', 'The specified product doesnt exist.');
+    }
 
-  if (!productData) {
-    throw new HttpsError('invalid-argument', 'The specified product doesnt exist.');
-  }
+    const customerData = (
+      await admin.firestore().collection('customers').doc(dto.uid).get()
+    ).data();
 
-  const customerData = (await admin.firestore().collection('customers').doc(dto.uid).get()).data();
+    if (!customerData) {
+      throw new HttpsError('invalid-argument', 'The specified customer doesnt exist.');
+    }
 
-  if (!customerData) {
-    throw new HttpsError('invalid-argument', 'The specified customer doesnt exist.');
-  }
+    const { formattedDate, appointmentId, appointment } = await computeNeededData(
+      dto,
+      productData as Product,
+      customerData as Customer,
+    );
 
-  const { formattedDate, appointmentId, appointment } = await computeNeededData(
-    dto,
-    productData as Product,
-    customerData as Customer,
-  );
+    const timesDoc = (await getBusinessAppointmentsDoc(dto, formattedDate).get()).data() ?? {};
 
-  const timesDoc = (await getTimesAppointmentsDoc(dto, formattedDate).get()).data();
+    Object.values(timesDoc).forEach((val) => {
+      if (val.startDate === appointment.startDate.toISOString()) {
+        throw new HttpsError(
+          'already-exists',
+          'The interval to make the appointment is already booked.',
+        );
+      }
+    });
 
-  if (!timesDoc) throw new HttpsError('internal', 'No times doc created');
+    try {
+      await performBatchWrite(dto, formattedDate, appointmentId, appointment);
 
-  if (timesDoc.appointments[appointment.startDate.toISOString()]) {
-    throw new HttpsError('already-exists', 'The interval to make the appointment is already booked.');
-  }
+      const appointmentResponse: any = {
+        startDate: appointment.startDate.toISOString(),
+        endDate: appointment.endDate.toISOString(),
+        customerName: appointment.customerName,
+        name: appointment.name,
+        customerId: appointment.customerId,
+        id: appointment.id,
+        duration: appointment.duration,
+      };
 
-  try {
-    await performBatchWrite(dto, formattedDate, appointmentId, appointment);
-
-    const appointmentResponse: any = {
-      startDate: appointment.startDate.toJSON(),
-      endDate: appointment.endDate.toJSON(),
-      customerName: appointment.customerName,
-      name: appointment.name,
-      customerId: appointment.customerId,
-      id: appointment.id,
-      duration: appointment.duration,
-    };
-
-    return { appointment: appointmentResponse };
-  } catch (error) {
-    throw new HttpsError('internal', error.message);
-  }
-});
+      return { appointment: appointmentResponse };
+    } catch (error) {
+      throw new HttpsError('internal', error.message);
+    }
+  });
 
 async function performBatchWrite(
   dto: GetAppointmentDto,
@@ -78,25 +86,30 @@ async function performBatchWrite(
 ) {
   const batchWrite = db.batch();
 
+  const appointmentToFirebase: any = { ...appointment };
+
+  appointmentToFirebase.endDate = appointment.endDate.toISOString();
+  appointmentToFirebase.startDate = appointment.startDate.toISOString();
+
   //write in the business side for agenda management
   batchWrite.set(
     getBusinessAppointmentsDoc(dto, formattedDate),
     {
-      [appointmentId]: appointment,
+      [appointmentId]: appointmentToFirebase,
     },
     { merge: true },
   );
 
   //write in the appointments public doc for public querying
-  batchWrite.set(
-    getTimesAppointmentsDoc(dto, formattedDate),
-    {
-      appointments: {
-        [appointment.startDate.toISOString()]: appointment.endDate.toISOString(),
-      },
-    },
-    { merge: true },
-  );
+  // batchWrite.set(
+  //   getTimesAppointmentsDoc(dto, formattedDate),
+  //   {
+  //     appointments: {
+  //       [appointmentToFirebase.startDate]: appointmentToFirebase.endDate,
+  //     },
+  //   },
+  //   { merge: true },
+  // );
 
   //write in the customer appointments subcollection for private an easy access querying
   batchWrite.set(getCustomerAppointmentsDoc(dto, appointmentId), appointment);
@@ -115,8 +128,8 @@ async function computeNeededData(dto: GetAppointmentDto, product: Product, custo
   const appointment: Appointment = {
     id: appointmentId,
     customerId: dto.uid,
-    startDate: dto.timestamp,
-    endDate: moment(dto.timestamp).add(product.duration, 'minutes').toDate(),
+    startDate: moment(dto.timestamp),
+    endDate: moment(dto.timestamp).add(product.duration, 'minutes'),
     duration: product.duration,
     name: product.name,
     customerName: customer.name,
@@ -125,12 +138,20 @@ async function computeNeededData(dto: GetAppointmentDto, product: Product, custo
 }
 
 function getBusinessAppointmentsDoc(dto: GetAppointmentDto, formattedDate: string) {
-  return db.collection('agendas').doc(dto.agendaId).collection('appointments').doc(`${formattedDate}-${dto.agendaId}`);
+  return db
+    .collection('agendas')
+    .doc(dto.agendaId)
+    .collection('appointments')
+    .doc(`${formattedDate}-${dto.agendaId}`);
 }
 
-function getTimesAppointmentsDoc(dto: GetAppointmentDto, formattedDate: string) {
-  return db.collection('agendas').doc(dto.agendaId).collection('times').doc(`${formattedDate}-${dto.agendaId}`);
-}
+// function getTimesAppointmentsDoc(dto: GetAppointmentDto, formattedDate: string) {
+//   return db
+//     .collection('agendas')
+//     .doc(dto.agendaId)
+//     .collection('times')
+//     .doc(`${formattedDate}-${dto.agendaId}`);
+// }
 
 function getCustomerAppointmentsDoc(dto: GetAppointmentDto, appointmentId: string) {
   return db.collection('customers').doc(dto.uid).collection('appointments').doc(appointmentId);

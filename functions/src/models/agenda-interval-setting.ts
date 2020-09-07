@@ -1,6 +1,6 @@
 import { Moment } from 'moment';
 
-export interface AvailableInterval {
+export interface AgendaIntervalSetting {
   dayOfWeek: number;
   day: string;
   from: Moment;

@@ -1,9 +1,11 @@
 //TODO compare using momentjs dates
-export function appointmentComparer(a: any, b: any) {
-  if (a.from < b.from) {
+import { Appointment } from '../models/appointment';
+
+export function appointmentComparer(a: Appointment, b: Appointment) {
+  if (a.startDate < b.startDate) {
     return -1;
   }
-  if (a.from > b.from) {
+  if (a.endDate > b.endDate) {
     return 1;
   }
   return 0;

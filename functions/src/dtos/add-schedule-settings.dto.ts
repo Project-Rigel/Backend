@@ -1,4 +1,11 @@
-import { IsDateString, IsEnum, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import {
+  IsDateString,
+  IsEnum,
+  IsOptional,
+  IsString,
+  Length,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { IsHourInHHmmFormat } from '../utils/is-interval-validator';
 
@@ -12,7 +19,7 @@ export enum DayOfWeek {
   Saturday,
 }
 
-export class Interval {
+export class IntervalDto {
   @IsString()
   @Length(5, 5)
   @IsHourInHHmmFormat()
@@ -55,6 +62,6 @@ export class AddScheduleSettingsDto {
    * An array of intervals describing the available appointment times.
    */
   @ValidateNested({ each: true })
-  @Type(() => Interval)
-  public readonly intervals: Interval[];
+  @Type(() => IntervalDto)
+  public readonly intervals: IntervalDto[];
 }
