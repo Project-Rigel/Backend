@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { GetAppointmentDto } from './dtos/get-appointment.dto';
+import { BookAppointmentDto } from './dtos/book-appointment.dto';
 import { getFormattedDateDMY } from './utils/date';
 import { validateDto } from './utils/dto-validator';
 import { generateId } from './utils/uid-generator';
@@ -8,7 +8,7 @@ import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Appointment } from './models/appointment';
 import { Product } from './models/product';
 import { Customer } from './models/customer';
-
+import { AppointmentResponse } from './dtos/appointment.response';
 import moment = require('moment');
 
 const db = admin.firestore();
@@ -20,7 +20,7 @@ export const bookAppointmentFunction = functions
       throw new HttpsError('unauthenticated', 'Unauthorized');
     }
 
-    const { dto, errors } = await validateDto<GetAppointmentDto>(GetAppointmentDto, data);
+    const { dto, errors } = await validateDto<BookAppointmentDto>(BookAppointmentDto, data);
 
     if (errors.length > 0) {
       throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
@@ -62,11 +62,11 @@ export const bookAppointmentFunction = functions
     try {
       await performBatchWrite(dto, formattedDate, appointmentId, appointment);
 
-      const appointmentResponse: any = {
+      const appointmentResponse: AppointmentResponse = {
         startDate: appointment.startDate.toISOString(),
         endDate: appointment.endDate.toISOString(),
         customerName: appointment.customerName,
-        name: appointment.name,
+        productName: appointment.name,
         customerId: appointment.customerId,
         id: appointment.id,
         duration: appointment.duration,
@@ -79,7 +79,7 @@ export const bookAppointmentFunction = functions
   });
 
 async function performBatchWrite(
-  dto: GetAppointmentDto,
+  dto: BookAppointmentDto,
   formattedDate: string,
   appointmentId: string,
   appointment: Appointment,
@@ -117,7 +117,7 @@ async function performBatchWrite(
   await batchWrite.commit();
 }
 
-async function computeNeededData(dto: GetAppointmentDto, product: Product, customer: Customer) {
+async function computeNeededData(dto: BookAppointmentDto, product: Product, customer: Customer) {
   //generate the needed data
   const formattedDate = getFormattedDateDMY(dto.timestamp);
   const appointmentId = generateId(db);
@@ -137,7 +137,7 @@ async function computeNeededData(dto: GetAppointmentDto, product: Product, custo
   return { formattedDate, appointmentId, appointment };
 }
 
-function getBusinessAppointmentsDoc(dto: GetAppointmentDto, formattedDate: string) {
+function getBusinessAppointmentsDoc(dto: BookAppointmentDto, formattedDate: string) {
   return db
     .collection('agendas')
     .doc(dto.agendaId)
@@ -145,7 +145,7 @@ function getBusinessAppointmentsDoc(dto: GetAppointmentDto, formattedDate: strin
     .doc(`${formattedDate}-${dto.agendaId}`);
 }
 
-// function getTimesAppointmentsDoc(dto: GetAppointmentDto, formattedDate: string) {
+// function getTimesAppointmentsDoc(dto: BookAppointmentDto, formattedDate: string) {
 //   return db
 //     .collection('agendas')
 //     .doc(dto.agendaId)
@@ -153,6 +153,6 @@ function getBusinessAppointmentsDoc(dto: GetAppointmentDto, formattedDate: strin
 //     .doc(`${formattedDate}-${dto.agendaId}`);
 // }
 
-function getCustomerAppointmentsDoc(dto: GetAppointmentDto, appointmentId: string) {
+function getCustomerAppointmentsDoc(dto: BookAppointmentDto, appointmentId: string) {
   return db.collection('customers').doc(dto.uid).collection('appointments').doc(appointmentId);
 }

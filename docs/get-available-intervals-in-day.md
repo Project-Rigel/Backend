@@ -26,6 +26,7 @@ export class GetAvailableTimesDto {
 
 El timestamp va en ISOFormat que es por ejemplo: 2020-08-07T21:00:00.000Z
 La clave data la pone automaticamente el firebasesdk al hacer functions.callable();
+<b> El TIMESTAMP TIENE QUE SER UTC </b>
 
 Ejemplo:
 ```json
