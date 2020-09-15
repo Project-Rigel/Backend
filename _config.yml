@@ -1,4 +1,17 @@
-title: "Green and in backend docs"
-remote_theme: pmarsceill/just-the-docs
-color_scheme: "dark"
-search_enabled: false
+title: Bitrise DevCenter
+email: edusimonpicon@gmail.com
+description: Green and In Backend
+baseurl: '/'
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-menus
+  - jekyll-redirect-from
+  - localization
+  - jekyll-seo-tag
+collections:
+  docs:
+    output: true
+    permalink: "/:path/"
