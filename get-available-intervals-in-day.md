@@ -1,3 +1,8 @@
+---
+title: Get Available Intervals Function Doc
+nav_order: 1
+---
+
 #Nombre del Callable
 getAvaliableTimeIntervals
 

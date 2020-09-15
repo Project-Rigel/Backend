@@ -1,9 +1,11 @@
+---
+title: Get Available Intervals Function Doc
+nav_order: 0
+---
+
 #Nombre del Callable
 bookAppointment
-
 URL: https://europe-west1-rigel-admin.cloudfunctions.net/bookAppointment
-
-
 
 # Dto de entrada
 ```ts
