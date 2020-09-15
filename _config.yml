@@ -1,7 +1,6 @@
-title: Green And In Backend
-email: edusimonpicon@gmail.com
-description: Green and In Backend
-# Remote Setting
-baseurl: "/docs"
-
+title: "Green And In Backend"
 remote_theme: pmarsceill/just-the-docs
+baseurl: "/docs"
+exclude: [ "node_modules/", "*.gemspec", "*.gem", "Gemfile", "Gemfile.lock", "package.json", "package-lock.json",  "script/", "LICENSE.txt", "lib/", "bin/", "README.md", "Rakefile"
+  ,        "docs/tests/"
+]
