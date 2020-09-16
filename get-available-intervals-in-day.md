@@ -4,10 +4,9 @@ nav_order: 1
 ---
 
 #Nombre del Callable
-getAvaliableTimeIntervals
+**getAvaliableTimeIntervals**
 
-URL: https://europe-west1-rigel-admin.cloudfunctions.net/getAvaliableTimeIntervals
-
+[Try the function here](https://europe-west1-rigel-admin.cloudfunctions.net/getAvaliableTimeIntervals)
 
 
 # Dto de entrada
