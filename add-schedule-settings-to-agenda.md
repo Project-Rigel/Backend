@@ -1,5 +1,5 @@
 ---
-title: Get Available Intervals Function Doc
+title: Add Schedule Settings To Agenda Function
 nav_order: 3
 ---
 

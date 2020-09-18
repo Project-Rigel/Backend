@@ -1,5 +1,5 @@
 ---
-title: Get Available Intervals Function Doc
+title: Get Available Intervals Function
 nav_order: 1
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: Get Available Intervals Function Doc
+title: Book Appointment Function
 nav_order: 0
 ---
 

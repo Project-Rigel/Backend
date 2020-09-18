@@ -1,5 +1,5 @@
 ---
-title: Get Available Intervals Function Doc
+title: Get Open Days For Month Function
 nav_order: 2
 ---
 
