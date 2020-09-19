@@ -232,8 +232,8 @@ export class AvailableIntervalsComputer {
         : endMoment.utc().diff(nextMomentTo.utc(), 'minutes') >= duration
     ) {
       computedIntervals.push({
-        from: nextMomentFrom.utc().format('HH:mm'),
-        to: nextMomentTo.utc().format('HH:mm'),
+        from: nextMomentFrom.utc().toISOString(),
+        to: nextMomentTo.utc().toISOString(),
       });
 
       nextMomentFrom = moment(nextMomentTo).utc();
@@ -242,8 +242,8 @@ export class AvailableIntervalsComputer {
 
     if (shouldAddAtEnd && endMoment.utc().diff(startMoment.utc(), 'minutes') > 0) {
       computedIntervals.push({
-        from: nextMomentFrom.utc().format('HH:mm'),
-        to: nextMomentTo.utc().format('HH:mm'),
+        from: nextMomentFrom.utc().toISOString(),
+        to: nextMomentTo.utc().toISOString(),
       });
     }
 
