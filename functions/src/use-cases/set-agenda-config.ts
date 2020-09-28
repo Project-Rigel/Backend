@@ -21,13 +21,12 @@ export class SetAgendaConfigUseCase {
     }
 
     const specificDate = dto.specificDate ? moment(dto.specificDate) : null;
-
     specificDate
       ? agenda.setConfigWithDate(dto.agendaId, specificDate, dto.intervals)
       : agenda.setConfigWithDayOfWeek(dto.agendaId, dto.dayOfWeek, dto.intervals);
 
     await this.agendaRepository.saveAgenda(agenda);
 
-    return 'Ok';
+    return agenda;
   }
 }

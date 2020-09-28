@@ -4,7 +4,6 @@ import { validateDto } from './utils/dto-validator';
 import { SetAgendaConfigDto } from './dtos/set-agenda-config.dto';
 import { SetAgendaConfigUseCase } from './use-cases/set-agenda-config';
 import { AgendaRepository } from './services/agenda.repository';
-import { BusinessRepository } from './services/business.repository';
 
 export const setAgendaConfigFunction = functions
   .region('europe-west1')
