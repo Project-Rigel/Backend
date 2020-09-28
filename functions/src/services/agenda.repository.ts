@@ -83,6 +83,9 @@ export class AgendaRepository {
     return intervals;
   }
 
+  public async saveAgenda(agenda: AgendaModel) {
+    //TODO guardar el documento en firestore
+  }
   public setAgendaConfigWithSpecificDate(
     agendaId: string,
     specificDate: Moment,

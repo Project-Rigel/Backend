@@ -20,19 +20,13 @@ export const setAgendaConfigFunction = functions
       throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
     }
 
-    return ctx.auth.token;
-    // //prueba
-    // if (!ctx.auth.token.isTheBoss) {
-    //   throw new HttpsError('permission-denied', 'Forbidden');
-    // }
+    //only allow to set the config if its the owner.
+    if (!ctx.auth.token.isBusinessOwner && dto.businessId === ctx.auth.token.businessId) {
+      throw new HttpsError('permission-denied', 'Forbidden');
+    }
 
     try {
-      const result = await new SetAgendaConfigUseCase(
-        new AgendaRepository(),
-        new BusinessRepository(),
-      ).execute(dto);
-
-      return result;
+      return await new SetAgendaConfigUseCase(new AgendaRepository()).execute(dto);
     } catch (e) {
       throw e;
     }

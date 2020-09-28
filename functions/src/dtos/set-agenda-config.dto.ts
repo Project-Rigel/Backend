@@ -9,6 +9,12 @@ export class SetAgendaConfigDto {
   @IsString()
   public readonly agendaId!: string;
 
+  /*
+   * The businessId of the user
+   */
+  @IsString()
+  public readonly businessId!: string;
+
   /**
    * The day of week for specifying intervals. If you specify a day of week you cant use a specific date.
    */
