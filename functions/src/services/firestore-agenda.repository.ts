@@ -1,40 +1,33 @@
 import { AgendaIntervalSetting } from '../models/agenda-interval-setting';
 import * as admin from 'firebase-admin';
-import moment = require('moment');
 import { AgendaModel } from '../models/agenda.model';
-import { Moment } from 'moment';
-import { IntervalDto } from '../dtos/add-schedule-settings.dto';
+import { Repository } from '../models/repository';
+import moment = require('moment');
 
-export class AgendaRepository {
-  public async getAgenda(agendaId: string): Promise<AgendaModel | null> {
-    let agendaDoc = await admin.firestore().doc(`agendas/${agendaId}`).get();
+export class FirestoreAgendaRepository implements Repository<AgendaModel> {
+  create(item: AgendaModel): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
+  delete(id: string): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
+  find(item: AgendaModel): Promise<AgendaModel[]> {
+    return Promise.resolve([]);
+  }
+
+  async findOne(id: string): Promise<AgendaModel> {
+    let agendaDoc = await admin.firestore().doc(`agendas/${id}`).get();
     const agendaData = agendaDoc.data() ?? null;
 
     if (!agendaData) return null;
 
-    return {
-      agendaId: agendaData.agendaId,
-      businessId: agendaData.businessId,
-    };
+    return new AgendaModel(agendaData.agendaId, agendaData.businessId, null);
   }
-  public async getAgendaIntervals(agendaId: string): Promise<AgendaIntervalSetting[]> {
-    let agendaDoc = await admin.firestore().doc(`agendas/${agendaId}`).get();
-    const timesData = agendaDoc.data() ?? {};
 
-    const intervals: AgendaIntervalSetting[] = [];
-
-    Object.keys(agendaDoc.data().intervals).forEach((key) => {
-      Object.keys(timesData.intervals[key]).forEach((intervalKey) => {
-        intervals.push({
-          day: isNaN(Number(key)) ? key : null,
-          dayOfWeek: !isNaN(Number(key)) ? Number.parseInt(key) : null,
-          from: moment(intervalKey, 'HH:mm'),
-          to: moment(timesData.intervals[key][intervalKey], 'HH:mm'),
-        });
-      });
-    });
-
-    return intervals;
+  update(id: string, item: AgendaModel): Promise<boolean> {
+    return Promise.resolve(false);
   }
 
   public async getAgendaIntervalsForWeekDay(
@@ -82,19 +75,4 @@ export class AgendaRepository {
     });
     return intervals;
   }
-
-  public async saveAgenda(agenda: AgendaModel) {
-    //TODO guardar el documento en firestore
-  }
-  public setAgendaConfigWithSpecificDate(
-    agendaId: string,
-    specificDate: Moment,
-    intervals: IntervalDto[],
-  ) {}
-
-  public setAgendaConfigWithDayOfWeek(
-    agendaId: string,
-    dayOfWeek: string,
-    intervals: IntervalDto[],
-  ) {}
 }
