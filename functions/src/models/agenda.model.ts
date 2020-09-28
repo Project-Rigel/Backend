@@ -22,7 +22,11 @@ export class AgendaModel {
   constructor(agendaId: string, businessId: string, config: AgendaConfig) {
     this.agendaId = agendaId;
     this.businessId = businessId;
-    this.config = config;
+    if (config === null) {
+      this.config = new AgendaConfig();
+    } else {
+      this.config = config;
+    }
   }
 
   //TODO crear un metodo comun para las operaciones parecidas de ambos metodos
@@ -31,11 +35,15 @@ export class AgendaModel {
     specificDate: any | moment.Moment,
     intervals: IntervalDto[],
   ): void {
-    //TODO set with date
+    this.agendaId = agendaId;
+    this.config.specificDate = specificDate;
+    this.config.intervals = intervals;
   }
 
   setConfigWithDayOfWeek(agendaId: string, dayOfWeek: string, intervals: IntervalDto[]): void {
-    //TDOO set with day of week
+    this.agendaId = agendaId;
+    this.config.dayOfWeek = this.getDayEnumFromString(dayOfWeek);
+    this.config.intervals = intervals;
   }
 
   public async getAgendaIntervals(agendaId: string): Promise<AgendaIntervalSetting[]> {
@@ -56,5 +64,26 @@ export class AgendaModel {
     });
 
     return intervals;
+  }
+
+  getDayEnumFromString(day: string) {
+    switch (day) {
+      case "Monday":
+        return DayOfWeek.Monday;
+      case "Tuesday":
+        return DayOfWeek.Tuesday;
+      case "Wednesday":
+        return DayOfWeek.Wednesday;
+      case "Thursday":
+        return DayOfWeek.Thursday;
+      case "Friday":
+        return DayOfWeek.Friday;
+      case "Saturday":
+        return DayOfWeek.Saturday;
+      case "Sunday":
+        return DayOfWeek.Sunday;
+      default:
+        return null;
+    }
   }
 }

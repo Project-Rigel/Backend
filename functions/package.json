@@ -24,6 +24,7 @@
     "class-validator": "^0.12.2",
     "firebase-admin": "^8.12.1",
     "firebase-functions": "^3.6.1",
+    "firebase-tools": "^8.11.2",
     "moment": "^2.26.0",
     "reflect-metadata": "^0.1.13"
   },
