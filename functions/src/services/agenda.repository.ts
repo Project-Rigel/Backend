@@ -1,8 +1,22 @@
 import { AgendaIntervalSetting } from '../models/agenda-interval-setting';
 import * as admin from 'firebase-admin';
 import moment = require('moment');
+import { AgendaModel } from '../models/agenda.model';
+import { Moment } from 'moment';
+import { IntervalDto } from '../dtos/add-schedule-settings.dto';
 
-export class AgendaService {
+export class AgendaRepository {
+  public async getAgenda(agendaId: string): Promise<AgendaModel | null> {
+    let agendaDoc = await admin.firestore().doc(`agendas/${agendaId}`).get();
+    const agendaData = agendaDoc.data() ?? null;
+
+    if (!agendaData) return null;
+
+    return {
+      agendaId: agendaData.agendaId,
+      businessId: agendaData.businessId,
+    };
+  }
   public async getAgendaIntervals(agendaId: string): Promise<AgendaIntervalSetting[]> {
     let agendaDoc = await admin.firestore().doc(`agendas/${agendaId}`).get();
     const timesData = agendaDoc.data() ?? {};
@@ -68,4 +82,16 @@ export class AgendaService {
     });
     return intervals;
   }
+
+  public setAgendaConfigWithSpecificDate(
+    agendaId: string,
+    specificDate: Moment,
+    intervals: IntervalDto[],
+  ) {}
+
+  public setAgendaConfigWithDayOfWeek(
+    agendaId: string,
+    dayOfWeek: string,
+    intervals: IntervalDto[],
+  ) {}
 }

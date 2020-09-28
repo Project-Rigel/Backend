@@ -5,7 +5,7 @@
   "author": "Green and in TEAM",
   "scripts": {
     "build": "tsc",
-    "serve": "tsc -w | firebase emulators:start --only functions",
+    "serve": "tsc -w | firebase emulators:start --only functions,firestore",
     "serve:debug": "npm run serve -- --inspect-functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",

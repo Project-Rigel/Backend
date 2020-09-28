@@ -3,11 +3,11 @@ import { AppointmentService } from './services/appointments.service';
 import { GetAvailableTimesDto } from './dtos/get-available-times.dto';
 import { validateDto } from './utils/dto-validator';
 import { AvailableIntervalsComputer } from './use-cases/available-intervals-computer';
-import { AgendaService } from './services/agenda.service';
+import { AgendaRepository } from './services/agenda.repository';
 import { ProductService } from './services/product.service';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 const appointmentService = new AppointmentService();
-const agendaService = new AgendaService();
+const agendaService = new AgendaRepository();
 const productService = new ProductService();
 const useCase = new AvailableIntervalsComputer();
 

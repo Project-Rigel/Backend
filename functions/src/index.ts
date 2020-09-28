@@ -15,8 +15,12 @@ import { getAvailableIntervalsInDayFunction } from './get-available-intervals-in
 import { bookAppointmentFunction } from './book-appointment.function';
 import { getOpenDaysForMonth } from './get-open-days-for-month';
 import { setAgendaScheduleSettings } from './add-schedule-settings-to-agenda';
+import { setAgendaConfigFunction } from './set-agenda-config.function';
+import { createCustomClaimOnBusinessCreationFunction } from './add-custom-claim.function';
 
 exports.getAvaliableTimeIntervals = getAvailableIntervalsInDayFunction;
 exports.bookAppointment = bookAppointmentFunction;
 exports.getAvaliableDaysInMonth = getOpenDaysForMonth;
 exports.setAgendaScheduleSettings = setAgendaScheduleSettings;
+exports.setAgendaConfig = setAgendaConfigFunction;
+exports.addBusinessDocsCallback = createCustomClaimOnBusinessCreationFunction;
