@@ -20,10 +20,11 @@ export const setAgendaConfigFunction = functions
       throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
     }
 
-    //prueba
-    if (!ctx.auth.token.isTheBoss) {
-      throw new HttpsError('permission-denied', 'Forbidden');
-    }
+    return ctx.auth.token;
+    // //prueba
+    // if (!ctx.auth.token.isTheBoss) {
+    //   throw new HttpsError('permission-denied', 'Forbidden');
+    // }
 
     try {
       const result = await new SetAgendaConfigUseCase(
