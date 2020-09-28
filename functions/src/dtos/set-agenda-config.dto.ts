@@ -3,6 +3,20 @@ import { Type } from 'class-transformer';
 import { DayOfWeek, IntervalDto } from './add-schedule-settings.dto';
 
 export class SetAgendaConfigDto {
+  constructor(
+    agendaId: string,
+    businessId: string,
+    dayOfWeek: string,
+    specificDate: string,
+    intervals: IntervalDto[],
+  ) {
+    this.agendaId = agendaId;
+    this.businessId = businessId;
+    this.dayOfWeek = dayOfWeek;
+    this.specificDate = specificDate;
+    this.intervals = intervals;
+  }
+
   /*
    * The agenda to apply the config to
    */

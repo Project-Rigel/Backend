@@ -16,7 +16,7 @@ export const createCustomClaimOnBusinessCreationFunction = functions
     await snapshot.ref.set({ hello: 'pene' }, { merge: true });
   });
 
-// exports.addDefaultUserRole = functions.auth.user().onCreate((user) => {
+// exports.addDefaultUserRole = use-cases.auth.user().onCreate((user) => {
 //   let uid = user.uid;
 //
 //   //add custom claims
