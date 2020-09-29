@@ -1,9 +1,9 @@
-import { AgendaIntervalSetting } from '../models/agenda-interval-setting';
-import { Appointment } from '../models/appointment';
-import { Product } from '../models/product';
+import { AgendaIntervalSetting } from '../../agendas/domain/models/agenda-interval-setting';
+import { Appointment } from '../domain/models/appointment';
+import { Product } from '../domain/models/product';
 import { Moment } from 'moment';
 import moment = require('moment');
-import { IntervalDto } from '../dtos/interval.dto';
+import { IntervalDto } from './dto/interval.dto';
 
 export class AvailableIntervalsComputer {
   public invoke(intervals: AgendaIntervalSetting[], appointments: Appointment[], product: Product) {

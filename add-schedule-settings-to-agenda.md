@@ -12,13 +12,13 @@ nav_order: 3
 ```ts
 export class AddScheduleSettingsDto {
   /**
-   * The id of the agenda you want to configure.
+   * The id of the agendas you want to configure.
    */
   @IsString()
   public readonly agendaId!: string;
 
   /**
-   * The business of the agenda
+   * The business of the agendas
    */
   @IsString()
   public readonly businessId!: string;

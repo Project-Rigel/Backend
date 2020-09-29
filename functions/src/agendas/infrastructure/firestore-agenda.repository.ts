@@ -1,26 +1,33 @@
-import { AgendaIntervalSetting } from '../models/agenda-interval-setting';
+import { AgendaIntervalSetting } from '../domain/models/agenda-interval-setting';
 import * as admin from 'firebase-admin';
+import { AgendaModel } from '../domain/models/agenda';
+import { Repository } from '../../shared/repository';
 import moment = require('moment');
 
-export class AgendaService {
-  public async getAgendaIntervals(agendaId: string): Promise<AgendaIntervalSetting[]> {
-    let agendaDoc = await admin.firestore().doc(`agendas/${agendaId}`).get();
-    const timesData = agendaDoc.data() ?? {};
+export class FirestoreAgendaRepository implements Repository<AgendaModel> {
+  create(item: AgendaModel): Promise<boolean> {
+    return Promise.resolve(false);
+  }
 
-    const intervals: AgendaIntervalSetting[] = [];
+  delete(id: string): Promise<boolean> {
+    return Promise.resolve(false);
+  }
 
-    Object.keys(agendaDoc.data().intervals).forEach((key) => {
-      Object.keys(timesData.intervals[key]).forEach((intervalKey) => {
-        intervals.push({
-          day: isNaN(Number(key)) ? key : null,
-          dayOfWeek: !isNaN(Number(key)) ? Number.parseInt(key) : null,
-          from: moment(intervalKey, 'HH:mm'),
-          to: moment(timesData.intervals[key][intervalKey], 'HH:mm'),
-        });
-      });
-    });
+  find(item: AgendaModel): Promise<AgendaModel[]> {
+    return Promise.resolve([]);
+  }
 
-    return intervals;
+  async findOne(id: string): Promise<AgendaModel> {
+    let agendaDoc = await admin.firestore().doc(`agendas/${id}`).get();
+    const agendaData = agendaDoc.data() ?? null;
+
+    if (!agendaData) return null;
+
+    return new AgendaModel(agendaData.agendaId, agendaData.businessId, null);
+  }
+
+  update(id: string, item: AgendaModel): Promise<boolean> {
+    return Promise.resolve(false);
   }
 
   public async getAgendaIntervalsForWeekDay(

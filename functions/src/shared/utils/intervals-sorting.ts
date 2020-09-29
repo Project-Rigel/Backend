@@ -1,4 +1,4 @@
-import { Appointment } from '../models/appointment';
+import { Appointment } from '../../appointments/domain/models/appointment';
 
 export function appointmentComparer(a: Appointment, b: Appointment) {
   if (a.startDate < b.startDate) {

@@ -7,7 +7,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { IsHourInHHmmFormat } from '../utils/is-interval-validator';
+import { IsHourInHHmmFormat } from '../../../shared/utils/is-interval-validator';
 
 export enum DayOfWeek {
   Sunday = 0,
@@ -33,13 +33,13 @@ export class IntervalDto {
 
 export class AddScheduleSettingsDto {
   /**
-   * The id of the agenda you want to configure.
+   * The id of the agendas you want to configure.
    */
   @IsString()
   public readonly agendaId!: string;
 
   /**
-   * The business of the agenda
+   * The business of the agendas
    */
   @IsString()
   public readonly businessId!: string;

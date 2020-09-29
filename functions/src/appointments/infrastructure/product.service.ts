@@ -1,5 +1,5 @@
 import * as admin from 'firebase-admin';
-import { Product } from '../models/product';
+import { Product } from '../domain/models/product';
 
 export class ProductService {
   async getProduct(productId: string): Promise<Product | null> {

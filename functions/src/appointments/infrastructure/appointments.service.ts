@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
-import { getFormattedDateDMY } from '../utils/date';
-import { Appointment } from '../models/appointment';
-import { appointmentComparer } from '../utils/intervals-sorting';
+import { getFormattedDateDMY } from '../../shared/utils/date';
+import { Appointment } from '../domain/models/appointment';
+import { appointmentComparer } from '../../shared/utils/intervals-sorting';
 import moment = require('moment');
 
 export class AppointmentService {

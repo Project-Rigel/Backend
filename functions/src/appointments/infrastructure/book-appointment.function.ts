@@ -1,14 +1,14 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { BookAppointmentDto } from './dtos/book-appointment.dto';
-import { getFormattedDateDMY } from './utils/date';
-import { validateDto } from './utils/dto-validator';
-import { generateId } from './utils/uid-generator';
+import { BookAppointmentDto } from '../application/dto/book-appointment.dto';
+import { getFormattedDateDMY } from '../../shared/utils/date';
+import { validateDto } from '../../shared/utils/dto-validator';
+import { generateId } from '../../shared/uid-generator';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { Appointment } from './models/appointment';
-import { Product } from './models/product';
-import { Customer } from './models/customer';
-import { AppointmentResponse } from './dtos/appointment.response';
+import { Appointment } from '../domain/models/appointment';
+import { Product } from '../domain/models/product';
+import { Customer } from '../domain/models/customer';
+import { AppointmentResponse } from '../application/dto/appointment.response';
 import moment = require('moment');
 
 const db = admin.firestore();
@@ -91,7 +91,7 @@ async function performBatchWrite(
   appointmentToFirebase.endDate = appointment.endDate.toISOString();
   appointmentToFirebase.startDate = appointment.startDate.toISOString();
 
-  //write in the business side for agenda management
+  //write in the business side for agendas management
   batchWrite.set(
     getBusinessAppointmentsDoc(dto, formattedDate),
     {

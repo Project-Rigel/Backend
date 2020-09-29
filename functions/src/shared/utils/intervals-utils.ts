@@ -1,4 +1,4 @@
-import { GetAvailableTimesDto } from '../dtos/get-available-times.dto';
+import { GetAvailableTimesDto } from '../../agendas/application/dto/get-available-times.dto';
 import * as admin from 'firebase-admin';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { getFormattedDateDMY } from './date';
@@ -55,7 +55,7 @@ export const createTimesDocWithDayOfWeekAvaliableInterval = async (
 };
 
 export const getAvailableTimesForDayInAgenda = async (dto: GetAvailableTimesDto, date: Date) => {
-  //get the document that holds the available times for that day. This document holds the available times given by the config of the agenda and the confirmed appointments.
+  //get the document that holds the available times for that day. This document holds the available times given by the config of the agendas and the confirmed appointments.
   const timesDoc = await admin
     .firestore()
     .doc(`agendas/${dto.agendaId}/times/${getFormattedDateDMY(date)}-${dto.agendaId}`)
@@ -90,7 +90,11 @@ export const getAvailableTimesForDayInAgenda = async (dto: GetAvailableTimesDto,
     await createTimesDocument(dto, date, timesDoc);
   }
 
-  return { availableTimes: intervals, appointments: timesDoc.data().appointments, id: timesDoc.data().id };
+  return {
+    availableTimes: intervals,
+    appointments: timesDoc.data().appointments,
+    id: timesDoc.data().id,
+  };
 };
 
 export const createTimesDocument = async (
@@ -116,11 +120,18 @@ export const createTimesDocument = async (
     if (parentData.intervals[normalizedDate]) {
       await createTimesDocWithDateAvaliableInterval(parentData, intervals, date, timesDoc, dto);
     } else if (parentData.intervals[dayOfWeek]) {
-      await createTimesDocWithDayOfWeekAvaliableInterval(parentData, dayOfWeek, intervals, timesDoc, date, dto);
+      await createTimesDocWithDayOfWeekAvaliableInterval(
+        parentData,
+        dayOfWeek,
+        intervals,
+        timesDoc,
+        date,
+        dto,
+      );
     } else {
       throw new HttpsError(
         'invalid-argument',
-        'The agenda you are trying to book in does not have a config for the day you are trying to book. Please contact the business owner to set it up.',
+        'The agendas you are trying to book in does not have a config for the day you are trying to book. Please contact the business owner to set it up.',
       );
     }
   }

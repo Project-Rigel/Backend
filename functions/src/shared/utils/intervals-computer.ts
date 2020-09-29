@@ -1,5 +1,5 @@
-import { AgendaIntervalSetting } from '../models/agenda-interval-setting';
-import { AppointmentInterval } from '../models/appointment-interval';
+import { AgendaIntervalSetting } from '../../agendas/domain/models/agenda-interval-setting';
+import { AppointmentInterval } from '../../appointments/domain/models/appointment-interval';
 
 export function computeIntervals(
   availableIntervals: AgendaIntervalSetting[],
