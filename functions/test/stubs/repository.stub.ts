@@ -1,4 +1,4 @@
-import { Repository } from '../../src/models/repository';
+import { Repository } from '../../src/shared/repository';
 
 export class TestRepository<T> implements Repository<T> {
   create(item: T): Promise<boolean> {
