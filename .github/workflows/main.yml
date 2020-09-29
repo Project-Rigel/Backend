@@ -14,6 +14,6 @@ jobs:
         with:
           node-version: 8
       - run: npm ci
-        working-directory: ./functions
+        working-directory: ./use-cases
       - run: npm run build
-        working-directory: ./functions
+        working-directory: ./use-cases

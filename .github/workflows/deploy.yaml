@@ -14,11 +14,11 @@ jobs:
         with:
           node-version: 12
       - run: npm ci
-        working-directory: ./functions
+        working-directory: ./use-cases
       - run: npm run build
-        working-directory: ./functions
+        working-directory: ./use-cases
       - uses: w9jds/firebase-action@master
         with:
-          args: deploy --only functions
+          args: deploy --only use-cases
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

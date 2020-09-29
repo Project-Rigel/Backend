@@ -1,7 +1,8 @@
-import { AgendaModel } from '../../src/models/agenda.model';
+import { AgendaModel } from '../../src/models/agenda';
+import { AgendaConfig } from '../../src/models/agenda-config';
 
 export class AgendaObjectMother {
-  public static RandomAgenda(id: string, businessId: string): AgendaModel {
-    return new AgendaModel(id, businessId, null);
+  public static RandomAgenda(id: string, businessId: string, config: AgendaConfig): AgendaModel {
+    return new AgendaModel(id, businessId, config);
   }
 }

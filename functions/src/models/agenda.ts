@@ -1,25 +1,15 @@
 import { DayOfWeek, IntervalDto } from '../dtos/add-schedule-settings.dto';
 import { AgendaIntervalSetting } from './agenda-interval-setting';
 import * as admin from 'firebase-admin';
+import { AgendaConfig } from './agenda-config';
 import moment = require('moment');
-
-//TODO move to another file
-class Interval {}
-
-//TODO move to another file
-class AgendaConfig {
-  expirationDate: Date | null;
-  specificDate: Date | null;
-  dayOfWeek: DayOfWeek | null;
-  intervals: Interval[];
-}
 
 export class AgendaModel {
   agendaId: string;
   businessId: string;
   config: AgendaConfig;
 
-  constructor(agendaId: string, businessId: string, config: AgendaConfig) {
+  constructor(agendaId: string, businessId: string, config: AgendaConfig | null) {
     this.agendaId = agendaId;
     this.businessId = businessId;
     if (config === null) {
@@ -29,7 +19,6 @@ export class AgendaModel {
     }
   }
 
-  //TODO crear un metodo comun para las operaciones parecidas de ambos metodos
   setConfigWithDate(
     agendaId: string,
     specificDate: any | moment.Moment,
@@ -68,19 +57,19 @@ export class AgendaModel {
 
   getDayEnumFromString(day: string) {
     switch (day) {
-      case "Monday":
+      case 'Monday':
         return DayOfWeek.Monday;
-      case "Tuesday":
+      case 'Tuesday':
         return DayOfWeek.Tuesday;
-      case "Wednesday":
+      case 'Wednesday':
         return DayOfWeek.Wednesday;
-      case "Thursday":
+      case 'Thursday':
         return DayOfWeek.Thursday;
-      case "Friday":
+      case 'Friday':
         return DayOfWeek.Friday;
-      case "Saturday":
+      case 'Saturday':
         return DayOfWeek.Saturday;
-      case "Sunday":
+      case 'Sunday':
         return DayOfWeek.Sunday;
       default:
         return null;

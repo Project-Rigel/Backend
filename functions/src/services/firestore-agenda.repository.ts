@@ -1,6 +1,6 @@
 import { AgendaIntervalSetting } from '../models/agenda-interval-setting';
 import * as admin from 'firebase-admin';
-import { AgendaModel } from '../models/agenda.model';
+import { AgendaModel } from '../models/agenda';
 import { Repository } from '../models/repository';
 import moment = require('moment');
 

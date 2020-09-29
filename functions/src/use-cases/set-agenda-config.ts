@@ -1,7 +1,8 @@
 import { SetAgendaConfigDto } from '../dtos/set-agenda-config.dto';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Repository } from '../models/repository';
-import { AgendaModel } from '../models/agenda.model';
+import { AgendaModel } from '../models/agenda';
+import { AgendaDto } from '../dtos/agenda.dto';
 import moment = require('moment');
 
 export class SetAgendaConfigUseCase {
@@ -28,6 +29,6 @@ export class SetAgendaConfigUseCase {
 
     await this.agendaRepository.update(agenda.agendaId, agenda);
 
-    return agenda;
+    return new AgendaDto(agenda.agendaId, agenda.businessId, agenda.config);
   }
 }
