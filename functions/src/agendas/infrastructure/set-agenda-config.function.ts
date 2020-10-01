@@ -3,7 +3,8 @@ import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { validateDto } from '../../shared/utils/dto-validator';
 import { SetAgendaConfigDto } from '../application/set-agenda-config/dto/set-agenda-config.dto';
 import { SetAgendaConfigUseCase } from '../application/set-agenda-config/set-agenda-config';
-import { FirestoreAgendaRepository } from './firestore-agenda.repository';
+import { FirestoreAgendaRepository } from './repositories/firestore-agenda.repository';
+import { DateFactory } from '../../shared/date.factory';
 
 export const setAgendaConfigFunction = functions
   .region('europe-west1')
@@ -25,7 +26,10 @@ export const setAgendaConfigFunction = functions
     }
 
     try {
-      return await new SetAgendaConfigUseCase(new FirestoreAgendaRepository()).execute(dto);
+      return await new SetAgendaConfigUseCase(
+        new FirestoreAgendaRepository(),
+        new DateFactory(),
+      ).execute(dto);
     } catch (e) {
       throw e;
     }
