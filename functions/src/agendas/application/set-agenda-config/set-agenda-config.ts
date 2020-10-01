@@ -4,10 +4,7 @@ import { Repository } from '../../../shared/repository';
 import { AgendaModel } from '../../domain/models/agenda';
 import { AgendaDto } from '../dto/agenda.dto';
 import moment = require('moment');
-import { AgendaConfig } from '../../domain/models/agenda-config';
-import { Interval } from '../../domain/models/agenda-interval';
 import { DateFactory } from '../../../shared/date.factory';
-import { getDayEnumFromString } from '../../../shared/utils/date';
 
 export class SetAgendaConfigUseCase {
   constructor(
@@ -28,22 +25,6 @@ export class SetAgendaConfigUseCase {
         'Specify a day of week or specificDate in UTC format, not both nor any. ',
       );
     }
-
-    // Si son iguales return error
-    const mappedIntervals = dto.intervals.map((interval) => {
-      return new Interval(interval.startHour, interval.endHour);
-    });
-    const configToAdd = new AgendaConfig(
-      moment(dto.expirationDate).toDate(),
-      moment(dto.specificDate).toDate(),
-      getDayEnumFromString(dto.dayOfWeek),
-      mappedIntervals,
-    );
-    agenda.config.forEach((config) => {
-      if (config.isEquals(configToAdd)) {
-        throw new HttpsError('invalid-argument', 'Cannot set config because it already exists.');
-      }
-    });
 
     const specificDate = dto.specificDate ? moment(dto.specificDate) : null;
     specificDate

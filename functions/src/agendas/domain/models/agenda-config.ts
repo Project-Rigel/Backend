@@ -23,7 +23,7 @@ export class AgendaConfig {
     return this.expirationDate.getTime() >= new Date().getTime();
   }
 
-  public isEquals(otherConfig: AgendaConfig): boolean {
+/*  public isEquals(otherConfig: AgendaConfig): boolean {
     if (
       otherConfig.dayOfWeek === this.dayOfWeek &&
       otherConfig.expirationDate.getTime() === this.expirationDate.getTime() &&
@@ -55,5 +55,5 @@ export class AgendaConfig {
         }
       });
     return areTheSame;
-  }
+  }*/
 }
