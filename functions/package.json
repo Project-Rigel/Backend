@@ -5,15 +5,17 @@
   "author": "Green and in TEAM",
   "scripts": {
     "build": "tsc",
-    "serve": "tsc -w | firebase emulators:start --only functions",
+    "serve": "tsc -w | firebase emulators:start --only functions,firestore",
+    "serve:no-firestore" : "tsc -w | firebase emulators:start --only functions",
     "serve:debug": "npm run serve -- --inspect-functions",
+    "serve:debug:no-firestore": "npm run serve:no-firestore -- --inspect-functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "lint": "eslint src/**/*.ts --fix",
     "format": "prettier src/**/*.ts --write",
-    "test": "npx jest test/**/*.ts"
+    "test": "npx jest"
   },
   "engines": {
     "node": "10"
@@ -24,6 +26,7 @@
     "class-validator": "^0.12.2",
     "firebase-admin": "^8.12.1",
     "firebase-functions": "^3.6.1",
+    "firebase-tools": "^8.11.2",
     "moment": "^2.26.0",
     "reflect-metadata": "^0.1.13"
   },
@@ -38,6 +41,7 @@
     "jest": "^26.4.2",
     "prettier": "^2.0.5",
     "ts-jest": "^26.3.0",
+    "ts-mockito": "^2.6.1",
     "typescript": "^3.8.0"
   },
   "private": true

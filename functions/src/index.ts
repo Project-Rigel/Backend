@@ -11,12 +11,18 @@ if (process.env.FUNCTIONS_EMULATOR) {
 }
 
 import 'reflect-metadata';
-import { getAvailableIntervalsInDayFunction } from './get-available-intervals-in-day.function';
-import { bookAppointmentFunction } from './book-appointment.function';
-import { getOpenDaysForMonth } from './get-open-days-for-month';
-import { setAgendaScheduleSettings } from './add-schedule-settings-to-agenda';
+import { getAvailableIntervalsInDayFunction } from './agendas/infrastructure/functions/get-available-intervals-in-day.function';
+import { bookAppointmentFunction } from './appointments/infrastructure/book-appointment.function';
+import { getOpenDaysForMonth } from './agendas/infrastructure/functions/get-open-days-for-month';
+import { setAgendaScheduleSettings } from './agendas/infrastructure/functions/add-schedule-settings-to-agenda';
+import { setAgendaConfigFunction } from './agendas/infrastructure/functions/set-agenda-config.function';
+import { createCustomClaimOnBusinessCreationFunction } from './users/add-custom-claim.function';
+import { GetAgendaConfigFunction } from './agendas/infrastructure/functions/get-agenda-config.function';
 
 exports.getAvaliableTimeIntervals = getAvailableIntervalsInDayFunction;
 exports.bookAppointment = bookAppointmentFunction;
 exports.getAvaliableDaysInMonth = getOpenDaysForMonth;
 exports.setAgendaScheduleSettings = setAgendaScheduleSettings;
+exports.setAgendaConfig = setAgendaConfigFunction;
+exports.addBusinessDocsCallback = createCustomClaimOnBusinessCreationFunction;
+exports.getAgendaConfig = GetAgendaConfigFunction;

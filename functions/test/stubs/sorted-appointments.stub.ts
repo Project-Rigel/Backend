@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { Appointment } from '../../src/models/appointment';
+import { Appointment } from '../../src/appointments/domain/models/appointment';
 
 export class SortedAppointmentsStub {
   static getOneAppointmentMorningOneEvening(

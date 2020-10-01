@@ -1,4 +1,4 @@
-import { AgendaIntervalSetting } from '../../src/models/agenda-interval-setting';
+import { AgendaIntervalSetting } from '../../src/agendas/domain/models/agenda-interval-setting';
 import moment = require('moment');
 
 export class AvaliableIntervalsStub {

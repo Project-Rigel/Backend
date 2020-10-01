@@ -1,15 +1,36 @@
----
-title: Add Schedule Settings To Agenda Function
-nav_order: 3
----
+import {
+  IsDateString,
+  IsEnum,
+  IsOptional,
+  IsString,
+  Length,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsHourInHHmmFormat } from '../../../shared/utils/is-interval-validator';
 
-#Nombre del Callable
-**setAgendaScheduleSettings**
+export enum DayOfWeek {
+  Sunday = 0,
+  Monday,
+  Tuesday,
+  Wednesday,
+  Thursday,
+  Friday,
+  Saturday,
+}
 
-[Try the function here](https://europe-west1-rigel-admin.cloudfunctions.net/setAgendaScheduleSettings)
+export class IntervalDto {
+  @IsString()
+  @Length(5, 5)
+  @IsHourInHHmmFormat()
+  startHour: string;
 
-# Dto de entrada
-```ts
+  @IsString()
+  @Length(5, 5)
+  @IsHourInHHmmFormat()
+  endHour: string;
+}
+
 export class AddScheduleSettingsDto {
   /**
    * The id of the agendas you want to configure.
@@ -44,45 +65,3 @@ export class AddScheduleSettingsDto {
   @Type(() => IntervalDto)
   public readonly intervals: IntervalDto[];
 }
-```
-
-Ejemplo:
-```json
-{
-	"data": {
-        "agendaId": "AZNVcZzTz5F9yLkxx96h",
-        "businessId": "123456789arturo",
-		"dayOfWeek": 7,
-		"specificDate": "",		
-		"intervals": [
-		  {
-		    "startHour": "9:00",
-            "endHour": "13:00"
-          },
-          {
-            "startHour": "15:00",
-            "endHour": "20:00"
-          },
-          {
-        
-          }
-        ] 
-	}
-}
-```
-
-# Respuesta
-
-```ts
-export class ResponseDto {
-  result: string
-}
-```
-
-Ejemplo:
-
-````json
-{
-  "result": "Ok"
-}
-````
