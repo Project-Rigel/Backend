@@ -1,20 +1,21 @@
-import { DayOfWeek, IntervalDto } from '../../application/dto/add-schedule-settings.dto';
+import { IntervalDto } from '../../application/dto/add-schedule-settings.dto';
 import { AgendaIntervalSetting } from './agenda-interval-setting';
 import * as admin from 'firebase-admin';
 import { AgendaConfig } from './agenda-config';
 import moment = require('moment');
+import { Interval } from './agenda-interval';
+import { getDayEnumFromString } from '../../../shared/utils/date';
 
 export class AgendaModel {
-  agendaId: string;
+  id: string;
   businessId: string;
-  config: AgendaConfig;
+  config: AgendaConfig[];
 
-  constructor(agendaId: string, businessId: string, config: AgendaConfig | null) {
-    this.agendaId = agendaId;
+  constructor(agendaId: string, businessId: string, config: AgendaConfig[] | null) {
+    this.id = agendaId;
     this.businessId = businessId;
-    if (config === null) {
-      this.config = new AgendaConfig();
-    } else {
+    this.config = [];
+    if (config !== null) {
       this.config = config;
     }
   }
@@ -24,15 +25,29 @@ export class AgendaModel {
     specificDate: any | moment.Moment,
     intervals: IntervalDto[],
   ): void {
-    this.agendaId = agendaId;
-    this.config.specificDate = specificDate;
-    this.config.intervals = intervals;
+    const mappedIntervals = intervals.map((interval) => {
+      return new Interval(interval.startHour, interval.endHour);
+    });
+    const newConfig = new AgendaConfig(null, moment(specificDate).toDate(), null, mappedIntervals);
+    this.config.push(newConfig);
   }
 
-  setConfigWithDayOfWeek(agendaId: string, dayOfWeek: string, intervals: IntervalDto[]): void {
-    this.agendaId = agendaId;
-    this.config.dayOfWeek = this.getDayEnumFromString(dayOfWeek);
-    this.config.intervals = intervals;
+  setConfigWithDayOfWeek(
+    agendaId: string,
+    dayOfWeek: string,
+    intervals: IntervalDto[],
+    now: Date,
+  ): void {
+    const mappedIntervals = intervals.map((interval) => {
+      return new Interval(interval.startHour, interval.endHour);
+    });
+    const newConfig = new AgendaConfig(
+      moment(now).add(2, 'months').toDate(),
+      null,
+      getDayEnumFromString(dayOfWeek),
+      mappedIntervals,
+    );
+    this.config.push(newConfig);
   }
 
   public async getAgendaIntervals(agendaId: string): Promise<AgendaIntervalSetting[]> {
@@ -53,26 +68,5 @@ export class AgendaModel {
     });
 
     return intervals;
-  }
-
-  getDayEnumFromString(day: string) {
-    switch (day) {
-      case 'Monday':
-        return DayOfWeek.Monday;
-      case 'Tuesday':
-        return DayOfWeek.Tuesday;
-      case 'Wednesday':
-        return DayOfWeek.Wednesday;
-      case 'Thursday':
-        return DayOfWeek.Thursday;
-      case 'Friday':
-        return DayOfWeek.Friday;
-      case 'Saturday':
-        return DayOfWeek.Saturday;
-      case 'Sunday':
-        return DayOfWeek.Sunday;
-      default:
-        return null;
-    }
   }
 }

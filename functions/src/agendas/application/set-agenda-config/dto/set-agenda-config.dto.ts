@@ -1,6 +1,6 @@
 import { IsDateString, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { DayOfWeek, IntervalDto } from './add-schedule-settings.dto';
+import { DayOfWeek, IntervalDto } from '../../dto/add-schedule-settings.dto';
 
 export class SetAgendaConfigDto {
   constructor(
@@ -8,12 +8,14 @@ export class SetAgendaConfigDto {
     businessId: string,
     dayOfWeek: string,
     specificDate: string,
+    expirationDate: string,
     intervals: IntervalDto[],
   ) {
     this.agendaId = agendaId;
     this.businessId = businessId;
     this.dayOfWeek = dayOfWeek;
     this.specificDate = specificDate;
+    this.expirationDate = expirationDate;
     this.intervals = intervals;
   }
 
@@ -35,6 +37,13 @@ export class SetAgendaConfigDto {
   @IsEnum(DayOfWeek)
   @IsOptional()
   public readonly dayOfWeek?: string;
+
+  /**
+   * The date in which the config becomes useless
+   */
+  @IsDateString()
+  @IsOptional()
+  public readonly expirationDate?: string;
 
   /**
    * Specific date for intervals. This field lets you specify a certain date for overwriting the default behaviour.

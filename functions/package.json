@@ -6,14 +6,16 @@
   "scripts": {
     "build": "tsc",
     "serve": "tsc -w | firebase emulators:start --only functions,firestore",
+    "serve:no-firestore" : "tsc -w | firebase emulators:start --only functions",
     "serve:debug": "npm run serve -- --inspect-functions",
+    "serve:debug:no-firestore": "npm run serve:no-firestore -- --inspect-functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "lint": "eslint src/**/*.ts --fix",
     "format": "prettier src/**/*.ts --write",
-    "test": "npx jest test/**/*.ts"
+    "test": "jest"
   },
   "engines": {
     "node": "10"

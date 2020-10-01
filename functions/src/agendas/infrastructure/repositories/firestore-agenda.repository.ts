@@ -1,8 +1,9 @@
-import { AgendaIntervalSetting } from '../domain/models/agenda-interval-setting';
+import { AgendaIntervalSetting } from '../../domain/models/agenda-interval-setting';
 import * as admin from 'firebase-admin';
-import { AgendaModel } from '../domain/models/agenda';
-import { Repository } from '../../shared/repository';
+import { AgendaModel } from '../../domain/models/agenda';
+import { Repository } from '../../../shared/repository';
 import moment = require('moment');
+import { AgendaConfig } from '../../domain/models/agenda-config';
 
 export class FirestoreAgendaRepository implements Repository<AgendaModel> {
   create(item: AgendaModel): Promise<boolean> {
@@ -17,17 +18,36 @@ export class FirestoreAgendaRepository implements Repository<AgendaModel> {
     return Promise.resolve([]);
   }
 
-  async findOne(id: string): Promise<AgendaModel> {
+  public async findOne(id: string): Promise<AgendaModel> {
     let agendaDoc = await admin.firestore().doc(`agendas/${id}`).get();
     const agendaData = agendaDoc.data() ?? null;
 
     if (!agendaData) return null;
 
-    return new AgendaModel(agendaData.agendaId, agendaData.businessId, null);
+    let agendaConfig: AgendaConfig[] = null;
+
+    if (agendaData.config) {
+      agendaConfig = agendaData.config.map(
+        (elem: any) =>
+          new AgendaConfig(
+            elem.expirationDate ? moment(elem.expirationDate).toDate() : null,
+            elem.specificDate ? moment(elem.specificDate).toDate() : null,
+            elem.dayOfWeek,
+            elem.intervals,
+          ),
+      );
+    }
+
+    return new AgendaModel(agendaData.id, agendaData.businessId, agendaConfig);
   }
 
-  update(id: string, item: AgendaModel): Promise<boolean> {
-    return Promise.resolve(false);
+  public async update(id: string, item: AgendaModel): Promise<boolean> {
+    const res = await admin
+      .firestore()
+      .doc(`agendas/${id}`)
+      .set(JSON.parse(JSON.stringify(item)));
+
+    return !res;
   }
 
   public async getAgendaIntervalsForWeekDay(

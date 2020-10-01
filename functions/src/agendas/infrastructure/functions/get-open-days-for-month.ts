@@ -1,10 +1,10 @@
 import * as functions from 'firebase-functions';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { validateDto } from '../../shared/utils/dto-validator';
+import { validateDto } from '../../../shared/utils/dto-validator';
 import * as admin from 'firebase-admin';
-import { GetAvailableDaysDto } from '../application/dto/get-available-days.dto';
+import { GetAvailableDaysDto } from '../../application/dto/get-available-days.dto';
 import moment = require('moment');
-import { getDateFromFormattedDate } from '../../shared/utils/date';
+import { getDateFromFormattedDate } from '../../../shared/utils/date';
 
 const db = admin.firestore();
 

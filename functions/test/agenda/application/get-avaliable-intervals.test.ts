@@ -21,8 +21,17 @@ describe('it should compute correctly intervals', () => {
     );
 
     expect(intervals).toStrictEqual([
-      { from: '09:00', to: '11:00' },
-      { from: '16:00', to: '18:00' },
+      {
+        from: moment.utc().set({ hours: 9, minutes: 0, seconds: 0, milliseconds: 0 }).toISOString(),
+        to: moment.utc().set({ hours: 11, minutes: 0, seconds: 0, milliseconds: 0 }).toISOString(),
+      },
+      {
+        from: moment
+          .utc()
+          .set({ hours: 16, minutes: 0, seconds: 0, milliseconds: 0 })
+          .toISOString(),
+        to: moment.utc().set({ hours: 18, minutes: 0, seconds: 0, milliseconds: 0 }).toISOString(),
+      },
     ]);
   });
 
@@ -42,8 +51,20 @@ describe('it should compute correctly intervals', () => {
     );
 
     expect(intervals).toStrictEqual([
-      { from: '11:00', to: '13:00' },
-      { from: '18:00', to: '20:00' },
+      {
+        from: moment
+          .utc()
+          .set({ hours: 11, minutes: 0, seconds: 0, milliseconds: 0 })
+          .toISOString(),
+        to: moment.utc().set({ hours: 13, minutes: 0, seconds: 0, milliseconds: 0 }).toISOString(),
+      },
+      {
+        from: moment
+          .utc()
+          .set({ hours: 18, minutes: 0, seconds: 0, milliseconds: 0 })
+          .toISOString(),
+        to: moment.utc().set({ hours: 20, minutes: 0, seconds: 0, milliseconds: 0 }).toISOString(),
+      },
     ]);
   });
 
@@ -62,6 +83,15 @@ describe('it should compute correctly intervals', () => {
       sortedAppointments,
       product,
     );
-    expect(intervals).toStrictEqual([{ from: '18:00', to: '20:00' }]);
+
+    expect(intervals).toStrictEqual([
+      {
+        from: moment
+          .utc()
+          .set({ hours: 18, minutes: 0, seconds: 0, milliseconds: 0 })
+          .toISOString(),
+        to: moment.utc().set({ hours: 20, minutes: 0, seconds: 0, milliseconds: 0 }).toISOString(),
+      },
+    ]);
   });
 });
