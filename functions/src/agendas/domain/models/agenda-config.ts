@@ -23,37 +23,13 @@ export class AgendaConfig {
     return this.expirationDate.getTime() >= new Date().getTime();
   }
 
-/*  public isEquals(otherConfig: AgendaConfig): boolean {
-    if (
-      otherConfig.dayOfWeek === this.dayOfWeek &&
-      otherConfig.expirationDate.getTime() === this.expirationDate.getTime() &&
-      otherConfig.specificDate.getTime() === this.specificDate.getTime()
-    ) {
+  public isEquals(otherConfig: AgendaConfig): boolean {
+    if (this.dayOfWeek && this.dayOfWeek === otherConfig.dayOfWeek) {
       return true;
     }
-
-    if (
-      this.intervals.length === otherConfig.intervals.length &&
-      this.areTheSameIntervals(otherConfig.intervals)
-    ) {
+    if (this.specificDate && this.specificDate.getTime() === otherConfig.specificDate.getTime()) {
       return true;
     }
-
     return false;
   }
-
-  private areTheSameIntervals(otherIntervals: Interval[]): boolean {
-    let areTheSame = false;
-    this.intervals
-      .map((interval) => {
-        return new Interval(interval.startHour, interval.endHour);
-      })
-      .forEach((interval: Interval, index: number) => {
-        if (interval.isEquals(otherIntervals[index])) {
-          areTheSame = true;
-          return;
-        }
-      });
-    return areTheSame;
-  }*/
 }

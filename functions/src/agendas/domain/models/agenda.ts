@@ -73,7 +73,7 @@ export class AgendaModel {
   addOrUpdateConfig(newConfig: AgendaConfig): void {
     let updated = false;
     this.config.forEach((config, index) => {
-      if (this.areTheSameConfigs(config, newConfig)) {
+      if (config.isEquals(newConfig)) {
         this.config[index] = newConfig;
         updated = true;
         return
@@ -82,15 +82,5 @@ export class AgendaModel {
     if (!updated) {
       this.config.push(newConfig);
     }
-  }
-
-  areTheSameConfigs(oneConfig: AgendaConfig, otherConfig: AgendaConfig): boolean {
-    if (oneConfig.dayOfWeek && oneConfig.dayOfWeek === otherConfig.dayOfWeek) {
-      return true;
-    }
-    if (oneConfig.specificDate && oneConfig.specificDate.getTime() === otherConfig.specificDate.getTime()) {
-      return true;
-    }
-    return false;
   }
 }
