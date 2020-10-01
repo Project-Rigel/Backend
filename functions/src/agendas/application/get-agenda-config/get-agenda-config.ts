@@ -3,6 +3,7 @@ import { AgendaModel } from '../../domain/models/agenda';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { GetAgendaConfigDto } from './dto/get-agenda-config.dto';
 import { AgendaConfig } from '../../domain/models/agenda-config';
+import { GetAgendaConfigResponse } from './dto/get-agenda-config.dto.response';
 
 export class GetAgendaConfigUseCase {
   constructor(private readonly agendaRepository: Repository<AgendaModel>) {}
@@ -20,6 +21,21 @@ export class GetAgendaConfigUseCase {
       });
     }
 
-    return agenda.config;
+    return agenda.config.map(config => {
+      if (config.dayOfWeek) {
+        return new GetAgendaConfigResponse(
+          config.expirationDate.toISOString(),
+          null,
+          config.dayOfWeek,
+          config.intervals
+        );
+      }
+      return new GetAgendaConfigResponse(
+        null,
+        config.expirationDate.toISOString(),
+        config.dayOfWeek,
+        config.intervals
+      );
+    });
   }
 }
