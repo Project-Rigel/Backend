@@ -2,9 +2,9 @@ import { SetAgendaConfigDto } from './dto/set-agenda-config.dto';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Repository } from '../../../shared/repository';
 import { AgendaModel } from '../../domain/models/agenda';
-import { AgendaDto } from '../dto/agenda.dto';
 import moment = require('moment');
 import { DateFactory } from '../../../shared/date.factory';
+import { SetAgendaConfigResponse } from './dto/set-agenda-config.dto.response';
 
 export class SetAgendaConfigUseCase {
   constructor(
@@ -38,6 +38,6 @@ export class SetAgendaConfigUseCase {
 
     await this.agendaRepository.update(agenda.id, agenda);
 
-    return new AgendaDto(agenda.id, agenda.businessId, agenda.config);
+    return new SetAgendaConfigResponse(agenda.id, agenda.businessId, agenda.config);
   }
 }
