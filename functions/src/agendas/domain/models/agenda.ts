@@ -25,7 +25,9 @@ export class AgendaModel {
     specificDate: any | moment.Moment,
     intervals: IntervalDto[],
   ): void {
-    const mappedIntervals = intervals.map(interval => {return new Interval(interval.startHour, interval.endHour)})
+    const mappedIntervals = intervals.map((interval) => {
+      return new Interval(interval.startHour, interval.endHour);
+    });
     const newConfig = new AgendaConfig(null, moment(specificDate).toDate(), null, mappedIntervals);
     this.config.push(newConfig);
   }
@@ -36,7 +38,9 @@ export class AgendaModel {
     intervals: IntervalDto[],
     now: Date,
   ): void {
-    const mappedIntervals = intervals.map(interval => {return new Interval(interval.startHour, interval.endHour)})
+    const mappedIntervals = intervals.map((interval) => {
+      return new Interval(interval.startHour, interval.endHour);
+    });
     const newConfig = new AgendaConfig(
       moment(now).add(2, 'months').toDate(),
       null,
