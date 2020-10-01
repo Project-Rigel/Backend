@@ -1,7 +1,7 @@
 import 'reflect-metadata';
-import { SetAgendaConfigUseCase } from '../../../src/agendas/application/set-agenda-config';
+import { SetAgendaConfigUseCase } from '../../../src/agendas/application/set-agenda-config/set-agenda-config';
 import { TestRepository } from '../../stubs/repository.stub';
-import { SetAgendaConfigDto } from '../../../src/agendas/application/dto/set-agenda-config.dto';
+import { SetAgendaConfigDto } from '../../../src/agendas/application/set-agenda-config/dto/set-agenda-config.dto';
 import { anyString, instance, mock, when } from 'ts-mockito';
 import { AgendaObjectMother } from '../../object-mothers/agenda.object-mother';
 import { AgendaDto } from '../../../src/agendas/application/dto/agenda.dto';

@@ -1,8 +1,8 @@
-import { Repository } from '../../shared/repository';
-import { AgendaModel } from '../domain/models/agenda';
+import { Repository } from '../../../shared/repository';
+import { AgendaModel } from '../../domain/models/agenda';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { GetAgendaConfigDto } from './dto/get-agenda-config.dto';
-import { AgendaConfig } from '../domain/models/agenda-config';
+import { AgendaConfig } from '../../domain/models/agenda-config';
 
 export class GetAgendaConfigUseCase {
   constructor(private readonly agendaRepository: Repository<AgendaModel>) {}

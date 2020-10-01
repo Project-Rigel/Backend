@@ -2,8 +2,8 @@ import * as functions from 'firebase-functions';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { validateDto } from '../../../shared/utils/dto-validator';
 import { FirestoreAgendaRepository } from '../repositories/firestore-agenda.repository';
-import { GetAgendaConfigDto } from '../../application/dto/get-agenda-config.dto';
-import { GetAgendaConfigUseCase } from '../../application/get-agenda-config';
+import { GetAgendaConfigDto } from '../../application/get-agenda-config/dto/get-agenda-config.dto';
+import { GetAgendaConfigUseCase } from '../../application/get-agenda-config/get-agenda-config';
 
 export const GetAgendaConfigFunction = functions
   .region('europe-west1')

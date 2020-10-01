@@ -1,13 +1,13 @@
 import { SetAgendaConfigDto } from './dto/set-agenda-config.dto';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { Repository } from '../../shared/repository';
-import { AgendaModel } from '../domain/models/agenda';
-import { AgendaDto } from './dto/agenda.dto';
+import { Repository } from '../../../shared/repository';
+import { AgendaModel } from '../../domain/models/agenda';
+import { AgendaDto } from '../dto/agenda.dto';
 import moment = require('moment');
-import { AgendaConfig } from '../domain/models/agenda-config';
-import { Interval } from '../domain/models/agenda-interval';
-import { getDayEnumFromString } from '../../shared/utils/date';
-import { DateFactory } from '../../shared/date.factory';
+import { AgendaConfig } from '../../domain/models/agenda-config';
+import { Interval } from '../../domain/models/agenda-interval';
+import { DateFactory } from '../../../shared/date.factory';
+import { getDayEnumFromString } from '../../../shared/utils/date';
 
 export class SetAgendaConfigUseCase {
   constructor(
@@ -30,14 +30,18 @@ export class SetAgendaConfigUseCase {
     }
 
     // Si son iguales return error
-    const mappedIntervals = dto.intervals.map(interval => {return new Interval(interval.startHour, interval.endHour)})
-    const configToAdd = new AgendaConfig(moment(dto.expirationDate).toDate(), moment(dto.specificDate).toDate(), getDayEnumFromString(dto.dayOfWeek), mappedIntervals);
-    agenda.config.forEach(config => {
+    const mappedIntervals = dto.intervals.map((interval) => {
+      return new Interval(interval.startHour, interval.endHour);
+    });
+    const configToAdd = new AgendaConfig(
+      moment(dto.expirationDate).toDate(),
+      moment(dto.specificDate).toDate(),
+      getDayEnumFromString(dto.dayOfWeek),
+      mappedIntervals,
+    );
+    agenda.config.forEach((config) => {
       if (config.isEquals(configToAdd)) {
-        throw new HttpsError(
-          'invalid-argument',
-          'Cannot set config because it already exists.',
-        );
+        throw new HttpsError('invalid-argument', 'Cannot set config because it already exists.');
       }
     });
 

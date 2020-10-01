@@ -1,6 +1,6 @@
 import { IsDateString, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { DayOfWeek, IntervalDto } from './add-schedule-settings.dto';
+import { DayOfWeek, IntervalDto } from '../../dto/add-schedule-settings.dto';
 
 export class SetAgendaConfigDto {
   constructor(

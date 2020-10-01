@@ -1,8 +1,8 @@
 import * as functions from 'firebase-functions';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { validateDto } from '../../../shared/utils/dto-validator';
-import { SetAgendaConfigDto } from '../../application/dto/set-agenda-config.dto';
-import { SetAgendaConfigUseCase } from '../../application/set-agenda-config';
+import { SetAgendaConfigDto } from '../../application/set-agenda-config/dto/set-agenda-config.dto';
+import { SetAgendaConfigUseCase } from '../../application/set-agenda-config/set-agenda-config';
 import { FirestoreAgendaRepository } from '../repositories/firestore-agenda.repository';
 import { DateFactory } from '../../../shared/date.factory';
 
