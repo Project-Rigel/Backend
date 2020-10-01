@@ -29,7 +29,7 @@ export class AgendaModel {
       return new Interval(interval.startHour, interval.endHour);
     });
     const newConfig = new AgendaConfig(null, moment(specificDate).toDate(), null, mappedIntervals);
-    this.config.push(newConfig);
+    this.addOrUpdateConfig(newConfig);
   }
 
   setConfigWithDayOfWeek(
@@ -47,7 +47,7 @@ export class AgendaModel {
       getDayEnumFromString(dayOfWeek),
       mappedIntervals,
     );
-    this.config.push(newConfig);
+    this.addOrUpdateConfig(newConfig);
   }
 
   public async getAgendaIntervals(agendaId: string): Promise<AgendaIntervalSetting[]> {
@@ -68,5 +68,29 @@ export class AgendaModel {
     });
 
     return intervals;
+  }
+
+  addOrUpdateConfig(newConfig: AgendaConfig): void {
+    let updated = false;
+    this.config.forEach((config, index) => {
+      if (this.areTheSameConfigs(config, newConfig)) {
+        this.config[index] = newConfig;
+        updated = true;
+        return
+      }
+    })
+    if (!updated) {
+      this.config.push(newConfig);
+    }
+  }
+
+  areTheSameConfigs(oneConfig: AgendaConfig, otherConfig: AgendaConfig): boolean {
+    if (oneConfig.dayOfWeek && oneConfig.dayOfWeek === otherConfig.dayOfWeek) {
+      return true;
+    }
+    if (oneConfig.specificDate && oneConfig.specificDate.getTime() === otherConfig.specificDate.getTime()) {
+      return true;
+    }
+    return false;
   }
 }
