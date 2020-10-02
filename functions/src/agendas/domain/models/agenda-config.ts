@@ -28,6 +28,5 @@ export class AgendaConfig {
       return true;
     }
     return this.specificDate && this.specificDate.getTime() === otherConfig.specificDate.getTime();
-
   }
 }
