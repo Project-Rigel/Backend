@@ -28,6 +28,6 @@ describe('get agenda config use case', () => {
     );
 
     const result = await new GetAgendaConfigUseCase(instance(mockedRepo)).execute(dto);
-    expect(result).toStrictEqual(AgendaConfigMother.RandomConfigWithDayOfWeek());
+    expect(result).toStrictEqual(AgendaConfigMother.RandomConfigWithDayOfWeekDto());
   });
 });
