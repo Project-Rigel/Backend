@@ -16,7 +16,7 @@
     "lint": "eslint src/**/*.ts --fix",
     "format": "prettier src/**/*.ts --write",
     "test": "jest",
-    "test:watch" : "jest --watchAll"
+    "test:watch": "jest --watchAll"
   },
   "engines": {
     "node": "10"
@@ -43,7 +43,25 @@
     "prettier": "^2.0.5",
     "ts-jest": "^26.3.0",
     "ts-mockito": "^2.6.1",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "organize-imports-cli": "^0.7.0",
+    "lint-staged": "^10.4.0",
+    "husky": "^4.3.0"
   },
-  "private": true
+  "private": true,
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run-script test"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{ts,js,css,html}": [
+      "prettier --write"
+    ],
+    "*.ts": [
+      "organize-imports-cli",
+      "prettier --write"
+    ]
+  }
 }

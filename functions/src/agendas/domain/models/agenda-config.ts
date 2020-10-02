@@ -27,9 +27,7 @@ export class AgendaConfig {
     if (this.dayOfWeek && this.dayOfWeek === otherConfig.dayOfWeek) {
       return true;
     }
-    if (this.specificDate && this.specificDate.getTime() === otherConfig.specificDate.getTime()) {
-      return true;
-    }
-    return false;
+    return this.specificDate && this.specificDate.getTime() === otherConfig.specificDate.getTime();
+
   }
 }
