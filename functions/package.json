@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "serve": "tsc -w | firebase emulators:start --only functions,firestore",
-    "serve:no-firestore" : "tsc -w | firebase emulators:start --only functions",
+    "serve:no-firestore": "tsc -w | firebase emulators:start --only functions",
     "serve:debug": "npm run serve -- --inspect-functions",
     "serve:debug:no-firestore": "npm run serve:no-firestore -- --inspect-functions",
     "shell": "npm run build && firebase functions:shell",
@@ -42,7 +42,7 @@
     "prettier": "^2.0.5",
     "ts-jest": "^26.3.0",
     "ts-mockito": "^2.6.1",
-    "typescript": "^3.8.0"
+    "typescript": "^3.9.7"
   },
   "private": true
 }
