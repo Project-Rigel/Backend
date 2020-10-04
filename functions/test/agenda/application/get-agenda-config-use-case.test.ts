@@ -15,7 +15,9 @@ describe('get agenda config use case', () => {
       AgendaObjectMother.RandomAgenda('1', '2', []),
     );
 
-    const result = await new GetAgendaConfigUseCase(instance(mockedRepo)).execute(dto);
+    const result = await new GetAgendaConfigUseCase(
+      instance(mockedRepo),
+    ).execute(dto);
     expect(result).toStrictEqual([]);
   });
 
@@ -24,10 +26,18 @@ describe('get agenda config use case', () => {
 
     const mockedRepo = mock(TestRepository);
     when(mockedRepo.findOne(anyString())).thenResolve(
-      AgendaObjectMother.RandomAgenda('1', '2', AgendaConfigMother.RandomConfigWithDayOfWeek()),
+      AgendaObjectMother.RandomAgenda(
+        '1',
+        '2',
+        AgendaConfigMother.RandomConfigWithDayOfWeek(),
+      ),
     );
 
-    const result = await new GetAgendaConfigUseCase(instance(mockedRepo)).execute(dto);
-    expect(result).toStrictEqual(AgendaConfigMother.RandomConfigWithDayOfWeekDto());
+    const result = await new GetAgendaConfigUseCase(
+      instance(mockedRepo),
+    ).execute(dto);
+    expect(result).toStrictEqual(
+      AgendaConfigMother.RandomConfigWithDayOfWeekDto(),
+    );
   });
 });

@@ -54,11 +54,18 @@ export const createTimesDocWithDayOfWeekAvaliableInterval = async (
   );
 };
 
-export const getAvailableTimesForDayInAgenda = async (dto: GetAvailableTimesDto, date: Date) => {
+export const getAvailableTimesForDayInAgenda = async (
+  dto: GetAvailableTimesDto,
+  date: Date,
+) => {
   //get the document that holds the available times for that day. This document holds the available times given by the config of the agendas and the confirmed appointments.
   const timesDoc = await admin
     .firestore()
-    .doc(`agendas/${dto.agendaId}/times/${getFormattedDateDMY(date)}-${dto.agendaId}`)
+    .doc(
+      `agendas/${dto.agendaId}/times/${getFormattedDateDMY(date)}-${
+        dto.agendaId
+      }`,
+    )
     .get();
 
   let agendaDoc = await admin.firestore().doc(`agendas/${dto.agendaId}`).get();
@@ -118,7 +125,13 @@ export const createTimesDocument = async (
     //the interval can be a specific date or a day of week. We need to normalize the date because we store the key as ISO string.
     const normalizedDate = date.setHours(0, 0, 0, 0);
     if (parentData.intervals[normalizedDate]) {
-      await createTimesDocWithDateAvaliableInterval(parentData, intervals, date, timesDoc, dto);
+      await createTimesDocWithDateAvaliableInterval(
+        parentData,
+        intervals,
+        date,
+        timesDoc,
+        dto,
+      );
     } else if (parentData.intervals[dayOfWeek]) {
       await createTimesDocWithDayOfWeekAvaliableInterval(
         parentData,

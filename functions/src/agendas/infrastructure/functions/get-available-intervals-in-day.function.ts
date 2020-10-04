@@ -19,13 +19,23 @@ export const getAvailableIntervalsInDayFunction = functions
       throw new HttpsError('unauthenticated', 'Unauthorized');
     }
 
-    const { errors, dto } = await validateDto<GetAvailableTimesDto>(GetAvailableTimesDto, data);
+    const { errors, dto } = await validateDto<GetAvailableTimesDto>(
+      GetAvailableTimesDto,
+      data,
+    );
 
     if (errors.length > 0) {
-      throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
+      throw new HttpsError(
+        'invalid-argument',
+        'Validation errors',
+        errors.toString(),
+      );
     }
 
-    const intervals = await agendaService.getAgendaIntervalsForWeekDay(dto.agendaId, dto.timestamp);
+    const intervals = await agendaService.getAgendaIntervalsForWeekDay(
+      dto.agendaId,
+      dto.timestamp,
+    );
     const appointments = await appointmentService.getSortedAppointmentsForDay(
       dto.agendaId,
       dto.timestamp,
@@ -34,7 +44,10 @@ export const getAvailableIntervalsInDayFunction = functions
     const product = await productService.getProduct(dto.productId);
 
     if (!product) {
-      throw new HttpsError('invalid-argument', 'There is no product associated with that Id.');
+      throw new HttpsError(
+        'invalid-argument',
+        'There is no product associated with that Id.',
+      );
     }
 
     return useCase.invoke(intervals, appointments, product);
