@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to functions 👋</h1>
+<h1 align="center">Welcome to Green And In: Backend 👋</h1>
 <p>
   <a href="https://www.npmjs.com/package/functions" target="_blank">
     <img alt="Version" src="https://img.shields.io/npm/v/functions.svg">
