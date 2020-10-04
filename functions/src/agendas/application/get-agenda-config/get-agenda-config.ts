@@ -32,7 +32,7 @@ export class GetAgendaConfigUseCase {
       }
       return new GetAgendaConfigResponse(
         null,
-        config.expirationDate.toISOString(),
+        config.specificDate.toISOString(),
         config.dayOfWeek,
         config.intervals,
       );
