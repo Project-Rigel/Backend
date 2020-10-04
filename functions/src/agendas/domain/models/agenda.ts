@@ -1,10 +1,10 @@
-import { IntervalDto } from '../../application/dto/add-schedule-settings.dto';
-import { AgendaIntervalSetting } from './agenda-interval-setting';
 import * as admin from 'firebase-admin';
-import { AgendaConfig } from './agenda-config';
-import moment = require('moment');
-import { Interval } from './agenda-interval';
 import { getDayEnumFromString } from '../../../shared/utils/date';
+import { IntervalDto } from '../../application/dto/add-schedule-settings.dto';
+import { AgendaConfig } from './agenda-config';
+import { Interval } from './agenda-interval';
+import { AgendaIntervalSetting } from './agenda-interval-setting';
+import moment = require('moment');
 
 export class AgendaModel {
   id: string;
@@ -76,9 +76,9 @@ export class AgendaModel {
       if (config.isEquals(newConfig)) {
         this.config[index] = newConfig;
         updated = true;
-        return
+        return;
       }
-    })
+    });
     if (!updated) {
       this.config.push(newConfig);
     }

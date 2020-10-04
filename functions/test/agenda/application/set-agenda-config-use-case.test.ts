@@ -1,16 +1,16 @@
-import 'reflect-metadata';
-import { SetAgendaConfigUseCase } from '../../../src/agendas/application/set-agenda-config/set-agenda-config';
-import { TestRepository } from '../../stubs/repository.stub';
-import { SetAgendaConfigDto } from '../../../src/agendas/application/set-agenda-config/dto/set-agenda-config.dto';
-import { anyString, instance, mock, when } from 'ts-mockito';
-import { AgendaObjectMother } from '../../object-mothers/agenda.object-mother';
-import { AgendaConfig } from '../../../src/agendas/domain/models/agenda-config';
-import { DayOfWeek } from '../../../src/agendas/application/dto/add-schedule-settings.dto';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import moment = require('moment');
-import { DateFactory } from '../../../src/shared/date.factory';
-import { Interval } from '../../../src/agendas/domain/models/agenda-interval';
+import 'reflect-metadata';
+import { anyString, instance, mock, when } from 'ts-mockito';
+import { DayOfWeek } from '../../../src/agendas/application/dto/add-schedule-settings.dto';
+import { SetAgendaConfigDto } from '../../../src/agendas/application/set-agenda-config/dto/set-agenda-config.dto';
 import { SetAgendaConfigResponse } from '../../../src/agendas/application/set-agenda-config/dto/set-agenda-config.dto.response';
+import { SetAgendaConfigUseCase } from '../../../src/agendas/application/set-agenda-config/set-agenda-config';
+import { AgendaConfig } from '../../../src/agendas/domain/models/agenda-config';
+import { Interval } from '../../../src/agendas/domain/models/agenda-interval';
+import { DateFactory } from '../../../src/shared/date.factory';
+import { AgendaObjectMother } from '../../object-mothers/agenda.object-mother';
+import { TestRepository } from '../../stubs/repository.stub';
+import moment = require('moment');
 
 describe('set agendas config use case', () => {
   it('should return an updated agendas with valid config', async () => {
@@ -32,8 +32,12 @@ describe('set agendas config use case', () => {
         dto,
       ),
     ).toStrictEqual(
-      new SetAgendaConfigResponse('1','2',
-        [new AgendaConfig(moment(date).add('2', 'months').toDate(), null, DayOfWeek.Monday, [new Interval('09:00', '12:00')])]))
+      new SetAgendaConfigResponse('1', '2', [
+        new AgendaConfig(moment(date).add('2', 'months').toDate(), null, DayOfWeek.Monday, [
+          new Interval('09:00', '12:00'),
+        ]),
+      ]),
+    );
   });
 
   it('should throw an exception if the agendas does not exist', async () => {

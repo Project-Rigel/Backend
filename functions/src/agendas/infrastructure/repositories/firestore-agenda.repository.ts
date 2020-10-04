@@ -1,9 +1,9 @@
-import { AgendaIntervalSetting } from '../../domain/models/agenda-interval-setting';
 import * as admin from 'firebase-admin';
-import { AgendaModel } from '../../domain/models/agenda';
 import { Repository } from '../../../shared/repository';
-import moment = require('moment');
+import { AgendaModel } from '../../domain/models/agenda';
 import { AgendaConfig } from '../../domain/models/agenda-config';
+import { AgendaIntervalSetting } from '../../domain/models/agenda-interval-setting';
+import moment = require('moment');
 
 export class FirestoreAgendaRepository implements Repository<AgendaModel> {
   create(item: AgendaModel): Promise<boolean> {

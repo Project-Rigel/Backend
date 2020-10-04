@@ -1,14 +1,14 @@
-import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { BookAppointmentDto } from '../application/dto/book-appointment.dto';
+import * as functions from 'firebase-functions';
+import { HttpsError } from 'firebase-functions/lib/providers/https';
+import { generateId } from '../../shared/uid-generator';
 import { getFormattedDateDMY } from '../../shared/utils/date';
 import { validateDto } from '../../shared/utils/dto-validator';
-import { generateId } from '../../shared/uid-generator';
-import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { Appointment } from '../domain/models/appointment';
-import { Product } from '../domain/models/product';
-import { Customer } from '../domain/models/customer';
 import { AppointmentResponse } from '../application/dto/appointment.response';
+import { BookAppointmentDto } from '../application/dto/book-appointment.dto';
+import { Appointment } from '../domain/models/appointment';
+import { Customer } from '../domain/models/customer';
+import { Product } from '../domain/models/product';
 import moment = require('moment');
 
 const db = admin.firestore();

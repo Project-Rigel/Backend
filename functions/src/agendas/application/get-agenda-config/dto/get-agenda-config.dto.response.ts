@@ -1,7 +1,7 @@
-import { DayOfWeek, IntervalDto } from '../../dto/add-schedule-settings.dto';
-import { Interval } from '../../../domain/models/agenda-interval';
-import { IsDateString, IsEnum, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsDateString, IsEnum, IsString, ValidateNested } from 'class-validator';
+import { Interval } from '../../../domain/models/agenda-interval';
+import { DayOfWeek, IntervalDto } from '../../dto/add-schedule-settings.dto';
 
 export class GetAgendaConfigResponse {
   constructor(
@@ -20,7 +20,6 @@ export class GetAgendaConfigResponse {
   @IsString()
   expirationDate!: string;
 
-
   @IsDateString()
   @IsString()
   specificDate!: string;
@@ -31,6 +30,4 @@ export class GetAgendaConfigResponse {
   @ValidateNested({ each: true })
   @Type(() => IntervalDto)
   intervals: Interval[];
-
-
 }

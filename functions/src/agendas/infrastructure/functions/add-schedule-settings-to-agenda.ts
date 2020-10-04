@@ -1,7 +1,7 @@
+import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { validateDto } from '../../../shared/utils/dto-validator';
-import * as admin from 'firebase-admin';
 import { AddScheduleSettingsDto, DayOfWeek } from '../../application/dto/add-schedule-settings.dto';
 import moment = require('moment');
 

@@ -1,5 +1,5 @@
-import { Business } from '../domain/models/business';
 import * as admin from 'firebase-admin';
+import { Business } from '../domain/models/business';
 
 export class BusinessRepository {
   public async getById(businessId: string): Promise<Business> {

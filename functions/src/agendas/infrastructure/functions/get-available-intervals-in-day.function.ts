@@ -1,11 +1,11 @@
 import * as functions from 'firebase-functions';
-import { AppointmentService } from '../../../appointments/infrastructure/appointments.service';
-import { GetAvailableTimesDto } from '../../application/dto/get-available-times.dto';
-import { validateDto } from '../../../shared/utils/dto-validator';
-import { AvailableIntervalsComputer } from '../../../appointments/application/available-intervals-computer';
-import { FirestoreAgendaRepository } from '../repositories/firestore-agenda.repository';
-import { ProductService } from '../../../appointments/infrastructure/product.service';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
+import { AvailableIntervalsComputer } from '../../../appointments/application/available-intervals-computer';
+import { AppointmentService } from '../../../appointments/infrastructure/appointments.service';
+import { ProductService } from '../../../appointments/infrastructure/product.service';
+import { validateDto } from '../../../shared/utils/dto-validator';
+import { GetAvailableTimesDto } from '../../application/dto/get-available-times.dto';
+import { FirestoreAgendaRepository } from '../repositories/firestore-agenda.repository';
 
 const appointmentService = new AppointmentService();
 const agendaService = new FirestoreAgendaRepository();

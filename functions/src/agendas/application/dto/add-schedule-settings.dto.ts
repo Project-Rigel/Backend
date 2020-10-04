@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsDateString,
   IsEnum,
@@ -6,7 +7,6 @@ import {
   Length,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 import { IsHourInHHmmFormat } from '../../../shared/utils/is-interval-validator';
 
 export enum DayOfWeek {

@@ -1,8 +1,8 @@
-import { AvaliableIntervalsStub } from '../../stubs/avaliable-intervals.stub';
-import { SortedAppointmentsStub } from '../../stubs/sorted-appointments.stub';
 import * as moment from 'moment';
 import { AvailableIntervalsComputer } from '../../../src/appointments/application/available-intervals-computer';
+import { AvaliableIntervalsStub } from '../../stubs/avaliable-intervals.stub';
 import { ProductStub } from '../../stubs/product.stub';
+import { SortedAppointmentsStub } from '../../stubs/sorted-appointments.stub';
 
 describe('it should compute correctly intervals', () => {
   test('09-14/16-20 : 2 Appointments: 11-13 18-20', () => {

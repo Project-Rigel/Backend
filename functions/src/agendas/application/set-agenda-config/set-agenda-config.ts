@@ -1,10 +1,10 @@
-import { SetAgendaConfigDto } from './dto/set-agenda-config.dto';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
+import { DateFactory } from '../../../shared/date.factory';
 import { Repository } from '../../../shared/repository';
 import { AgendaModel } from '../../domain/models/agenda';
-import moment = require('moment');
-import { DateFactory } from '../../../shared/date.factory';
+import { SetAgendaConfigDto } from './dto/set-agenda-config.dto';
 import { SetAgendaConfigResponse } from './dto/set-agenda-config.dto.response';
+import moment = require('moment');
 
 export class SetAgendaConfigUseCase {
   constructor(

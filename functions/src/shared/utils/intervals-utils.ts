@@ -1,6 +1,6 @@
-import { GetAvailableTimesDto } from '../../agendas/application/dto/get-available-times.dto';
 import * as admin from 'firebase-admin';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
+import { GetAvailableTimesDto } from '../../agendas/application/dto/get-available-times.dto';
 import { getFormattedDateDMY } from './date';
 
 export const createTimesDocWithDateAvaliableInterval = async (
