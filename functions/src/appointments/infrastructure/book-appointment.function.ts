@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { generateId } from '../../shared/uid-generator';
+import { FirestoreIdGenerator } from '../../shared/infraestructure/firestore-id-generator';
 import { getFormattedDateDMY } from '../../shared/utils/date';
 import { validateDto } from '../../shared/utils/dto-validator';
 import { AppointmentResponse } from '../application/dto/appointment.response';
@@ -20,10 +20,17 @@ export const bookAppointmentFunction = functions
       throw new HttpsError('unauthenticated', 'Unauthorized');
     }
 
-    const { dto, errors } = await validateDto<BookAppointmentDto>(BookAppointmentDto, data);
+    const { dto, errors } = await validateDto<BookAppointmentDto>(
+      BookAppointmentDto,
+      data,
+    );
 
     if (errors.length > 0) {
-      throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
+      throw new HttpsError(
+        'invalid-argument',
+        'Validation errors',
+        errors.toString(),
+      );
     }
 
     const productData = (
@@ -31,7 +38,10 @@ export const bookAppointmentFunction = functions
     ).data();
 
     if (!productData) {
-      throw new HttpsError('invalid-argument', 'The specified product doesnt exist.');
+      throw new HttpsError(
+        'invalid-argument',
+        'The specified product doesnt exist.',
+      );
     }
 
     const customerData = (
@@ -39,16 +49,24 @@ export const bookAppointmentFunction = functions
     ).data();
 
     if (!customerData) {
-      throw new HttpsError('invalid-argument', 'The specified customer doesnt exist.');
+      throw new HttpsError(
+        'invalid-argument',
+        'The specified customer doesnt exist.',
+      );
     }
 
-    const { formattedDate, appointmentId, appointment } = await computeNeededData(
+    const {
+      formattedDate,
+      appointmentId,
+      appointment,
+    } = await computeNeededData(
       dto,
       productData as Product,
       customerData as Customer,
     );
 
-    const timesDoc = (await getBusinessAppointmentsDoc(dto, formattedDate).get()).data() ?? {};
+    const timesDoc =
+      (await getBusinessAppointmentsDoc(dto, formattedDate).get()).data() ?? {};
 
     Object.values(timesDoc).forEach((val) => {
       if (val.startDate === appointment.startDate.toISOString()) {
@@ -117,10 +135,14 @@ async function performBatchWrite(
   await batchWrite.commit();
 }
 
-async function computeNeededData(dto: BookAppointmentDto, product: Product, customer: Customer) {
+async function computeNeededData(
+  dto: BookAppointmentDto,
+  product: Product,
+  customer: Customer,
+) {
   //generate the needed data
   const formattedDate = getFormattedDateDMY(dto.timestamp);
-  const appointmentId = generateId(db);
+  const appointmentId = new FirestoreIdGenerator().generate();
 
   //get the product info
   await db.doc(`users/${dto.businessId}/products/${dto.productId}`).get();
@@ -137,7 +159,10 @@ async function computeNeededData(dto: BookAppointmentDto, product: Product, cust
   return { formattedDate, appointmentId, appointment };
 }
 
-function getBusinessAppointmentsDoc(dto: BookAppointmentDto, formattedDate: string) {
+function getBusinessAppointmentsDoc(
+  dto: BookAppointmentDto,
+  formattedDate: string,
+) {
   return db
     .collection('agendas')
     .doc(dto.agendaId)
@@ -153,6 +178,13 @@ function getBusinessAppointmentsDoc(dto: BookAppointmentDto, formattedDate: stri
 //     .doc(`${formattedDate}-${dto.agendaId}`);
 // }
 
-function getCustomerAppointmentsDoc(dto: BookAppointmentDto, appointmentId: string) {
-  return db.collection('customers').doc(dto.uid).collection('appointments').doc(appointmentId);
+function getCustomerAppointmentsDoc(
+  dto: BookAppointmentDto,
+  appointmentId: string,
+) {
+  return db
+    .collection('customers')
+    .doc(dto.uid)
+    .collection('appointments')
+    .doc(appointmentId);
 }

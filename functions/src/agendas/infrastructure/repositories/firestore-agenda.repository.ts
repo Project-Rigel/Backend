@@ -74,7 +74,10 @@ export class FirestoreAgendaRepository implements Repository<AgendaModel> {
     return this.adjustMomentsToTimestamp(intervals, timestamp);
   }
 
-  private adjustMomentsToTimestamp(intervals: AgendaIntervalSetting[], timestamp: string) {
+  private adjustMomentsToTimestamp(
+    intervals: AgendaIntervalSetting[],
+    timestamp: string,
+  ) {
     const dayMoment = moment.utc(timestamp);
 
     intervals.map((val) => {

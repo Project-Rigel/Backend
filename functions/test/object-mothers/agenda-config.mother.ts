@@ -10,7 +10,14 @@ export class AgendaConfigMother {
     dayOfWeek: DayOfWeek = DayOfWeek.Monday,
     intervals: Interval[] = [new Interval('08:00', '12:00')],
   ) {
-    return [new AgendaConfig(AgendaConfigMother.expirationDate, null, dayOfWeek, intervals)];
+    return [
+      new AgendaConfig(
+        AgendaConfigMother.expirationDate,
+        null,
+        dayOfWeek,
+        intervals,
+      ),
+    ];
   }
 
   public static RandomConfigWithDayOfWeekDto(

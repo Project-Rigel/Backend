@@ -14,9 +14,14 @@ import moment = require('moment');
 
 describe('set agendas config use case', () => {
   it('should return an updated agendas with valid config', async () => {
-    const dto = new SetAgendaConfigDto('1', '1', 'Monday', null, '2020-10-07T21:00:00.000Z', [
-      new Interval('09:00', '12:00'),
-    ]);
+    const dto = new SetAgendaConfigDto(
+      '1',
+      '1',
+      'Monday',
+      null,
+      '2020-10-07T21:00:00.000Z',
+      [new Interval('09:00', '12:00')],
+    );
 
     const mockedRepo = mock(TestRepository);
     when(mockedRepo.findOne(anyString())).thenResolve(
@@ -28,25 +33,37 @@ describe('set agendas config use case', () => {
     when(mockedTimeFactory.now()).thenReturn(date);
 
     expect(
-      await new SetAgendaConfigUseCase(instance(mockedRepo), instance(mockedTimeFactory)).execute(
-        dto,
-      ),
+      await new SetAgendaConfigUseCase(
+        instance(mockedRepo),
+        instance(mockedTimeFactory),
+      ).execute(dto),
     ).toStrictEqual(
       new SetAgendaConfigResponse('1', '2', [
-        new AgendaConfig(moment(date).add('2', 'months').toDate(), null, DayOfWeek.Monday, [
-          new Interval('09:00', '12:00'),
-        ]),
+        new AgendaConfig(
+          moment(date).add('2', 'months').toDate(),
+          null,
+          DayOfWeek.Monday,
+          [new Interval('09:00', '12:00')],
+        ),
       ]),
     );
   });
 
   it('should throw an exception if the agendas does not exist', async () => {
-    const dto = new SetAgendaConfigDto('1', '1', 'Monday', null, '2020-10-07T21:00:00.000Z', [
-      { startHour: '09:00', endHour: '12:00' },
-    ]);
+    const dto = new SetAgendaConfigDto(
+      '1',
+      '1',
+      'Monday',
+      null,
+      '2020-10-07T21:00:00.000Z',
+      [{ startHour: '09:00', endHour: '12:00' }],
+    );
 
     await expect(
-      new SetAgendaConfigUseCase(new TestRepository(), instance(mock(DateFactory))).execute(dto),
+      new SetAgendaConfigUseCase(
+        new TestRepository(),
+        instance(mock(DateFactory)),
+      ).execute(dto),
     ).rejects.toThrow(HttpsError);
   });
 
@@ -61,7 +78,10 @@ describe('set agendas config use case', () => {
     );
 
     await expect(
-      new SetAgendaConfigUseCase(new TestRepository(), instance(mock(DateFactory))).execute(dto),
+      new SetAgendaConfigUseCase(
+        new TestRepository(),
+        instance(mock(DateFactory)),
+      ).execute(dto),
     ).rejects.toThrow(HttpsError);
   });
 });

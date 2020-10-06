@@ -14,7 +14,9 @@ export class AppointmentService {
     const appointmentsDocs = await admin
       .firestore()
       .doc(
-        `agendas/${agendaId}/appointments/${getFormattedDateDMY(new Date(timestamp))}-${agendaId}`,
+        `agendas/${agendaId}/appointments/${getFormattedDateDMY(
+          new Date(timestamp),
+        )}-${agendaId}`,
       )
       .get();
 

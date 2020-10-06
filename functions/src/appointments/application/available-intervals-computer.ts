@@ -6,7 +6,11 @@ import { IntervalDto } from './dto/interval.dto';
 import moment = require('moment');
 
 export class AvailableIntervalsComputer {
-  public invoke(intervals: AgendaIntervalSetting[], appointments: Appointment[], product: Product) {
+  public invoke(
+    intervals: AgendaIntervalSetting[],
+    appointments: Appointment[],
+    product: Product,
+  ) {
     //1. compound intervals with its corresponding sorted appointment
     const intervalsWithAppointments = AvailableIntervalsComputer.createIntervalsWithAppointments(
       intervals,
@@ -46,8 +50,14 @@ export class AvailableIntervalsComputer {
           ),
         );
 
-        const diff = intervalWithAppointment.to.diff(appointment.endDate, 'minutes');
-        if (intervalWithAppointment.appointments.length === 1 && diff >= product.duration) {
+        const diff = intervalWithAppointment.to.diff(
+          appointment.endDate,
+          'minutes',
+        );
+        if (
+          intervalWithAppointment.appointments.length === 1 &&
+          diff >= product.duration
+        ) {
           computedIntervals.push(
             ...AvailableIntervalsComputer.computeIntervalsUntilEndOfInterval(
               appointment,
@@ -114,7 +124,12 @@ export class AvailableIntervalsComputer {
       };
 
       for (let j = 0; j < appointments.length; j++) {
-        if (AvailableIntervalsComputer.isAppointmentInsideInterval(appointments[j], intervals[i])) {
+        if (
+          AvailableIntervalsComputer.isAppointmentInsideInterval(
+            appointments[j],
+            intervals[i],
+          )
+        ) {
           intervalWithAppointment.appointments.push(appointments[j]);
         }
       }
@@ -240,7 +255,10 @@ export class AvailableIntervalsComputer {
       nextMomentTo = moment(nextMomentTo).utc().add(duration, 'minutes');
     }
 
-    if (shouldAddAtEnd && endMoment.utc().diff(startMoment.utc(), 'minutes') > 0) {
+    if (
+      shouldAddAtEnd &&
+      endMoment.utc().diff(startMoment.utc(), 'minutes') > 0
+    ) {
       computedIntervals.push({
         from: nextMomentFrom.utc().toISOString(),
         to: nextMomentTo.utc().toISOString(),

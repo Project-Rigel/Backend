@@ -1,5 +1,10 @@
 import { Type } from 'class-transformer';
-import { IsDateString, IsEnum, IsString, ValidateNested } from 'class-validator';
+import {
+  IsDateString,
+  IsEnum,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Interval } from '../../../domain/models/agenda-interval';
 import { DayOfWeek, IntervalDto } from '../../dto/add-schedule-settings.dto';
 

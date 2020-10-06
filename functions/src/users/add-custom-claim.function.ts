@@ -15,23 +15,3 @@ export const createCustomClaimOnBusinessCreationFunction = functions
     );
     await snapshot.ref.set({ hello: 'pene' }, { merge: true });
   });
-
-// exports.addDefaultUserRole = use-cases.auth.user().onCreate((user) => {
-//   let uid = user.uid;
-//
-//   //add custom claims
-//   return admin
-//     .auth()
-//     .setCustomUserClaims(uid, {
-//       isBusinessAdmin: true,
-//     })
-//     .then(() => {
-//       //Interesting to note: we need to re-fetch the userRecord, as the user variable **does not** hold the claim
-//       return admin.auth().getUser(uid);
-//     })
-//     .then((userRecord) => {
-//       console.log(uid);
-//       console.log(userRecord.customClaims.isAdmin);
-//       return null;
-//     });
-// });
