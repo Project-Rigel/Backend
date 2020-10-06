@@ -18,11 +18,13 @@ import { getOpenDaysForMonth } from './agendas/infrastructure/functions/get-open
 import { setAgendaConfigFunction } from './agendas/infrastructure/functions/set-agenda-config.function';
 import { bookAppointmentFunction } from './appointments/infrastructure/book-appointment.function';
 import { createCustomClaimOnBusinessCreationFunction } from './users/add-custom-claim.function';
+import { setAgendaConfigBulkFunction } from './agendas/infrastructure/functions/set-agenda-config-bulk.function';
 
 exports.getAvaliableTimeIntervals = getAvailableIntervalsInDayFunction;
 exports.bookAppointment = bookAppointmentFunction;
 exports.getAvaliableDaysInMonth = getOpenDaysForMonth;
 exports.setAgendaScheduleSettings = setAgendaScheduleSettings;
 exports.setAgendaConfig = setAgendaConfigFunction;
+exports.setAgendaConfigBulk = setAgendaConfigBulkFunction;
 exports.addBusinessDocsCallback = createCustomClaimOnBusinessCreationFunction;
 exports.getAgendaConfig = GetAgendaConfigFunction;
