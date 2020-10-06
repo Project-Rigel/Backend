@@ -72,13 +72,16 @@ export class AgendaModel {
 
   addOrUpdateConfig(newConfig: AgendaConfig): void {
     let updated = false;
-    this.config.forEach((config, index) => {
+    for (let i = 0; i < this.config.length; i++) {
+      const config = this.config[i];
+
       if (config.isEquals(newConfig)) {
-        this.config[index] = newConfig;
+        this.config[i] = newConfig;
         updated = true;
-        return;
+        break;
       }
-    });
+    }
+
     if (!updated) {
       this.config.push(newConfig);
     }

@@ -26,6 +26,10 @@ export class SetAgendaConfigUseCase {
       );
     }
 
+    if (dto.specificDate && dto.expirationDate) {
+      throw new HttpsError('invalid-argument', 'A specific date can have and expiration. ');
+    }
+
     const specificDate = dto.specificDate ? moment(dto.specificDate) : null;
     specificDate
       ? agenda.setConfigWithDate(dto.agendaId, specificDate, dto.intervals)

@@ -24,9 +24,13 @@ export class AgendaConfig {
   }
 
   public isEquals(otherConfig: AgendaConfig): boolean {
-    if (this.dayOfWeek && this.dayOfWeek === otherConfig.dayOfWeek) {
+    if (this.dayOfWeek && otherConfig.dayOfWeek && this.dayOfWeek === otherConfig.dayOfWeek) {
       return true;
     }
-    return this.specificDate && this.specificDate.getTime() === otherConfig.specificDate.getTime();
+    return (
+      this.specificDate &&
+      otherConfig.specificDate &&
+      this.specificDate.getTime() === otherConfig.specificDate.getTime()
+    );
   }
 }

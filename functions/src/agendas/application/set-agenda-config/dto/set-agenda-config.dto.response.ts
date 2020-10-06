@@ -17,7 +17,7 @@ export class SetAgendaConfigResponse {
       }
       return new GetAgendaConfigResponse(
         null,
-        conf.expirationDate.toISOString(),
+        conf.specificDate.toISOString(),
         conf.dayOfWeek,
         conf.intervals,
       );
