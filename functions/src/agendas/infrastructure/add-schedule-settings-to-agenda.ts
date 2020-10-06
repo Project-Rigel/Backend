@@ -2,7 +2,10 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { validateDto } from '../../shared/utils/dto-validator';
-import { AddScheduleSettingsDto, DayOfWeek } from '../application/dto/add-schedule-settings.dto';
+import {
+  AddScheduleSettingsDto,
+  DayOfWeek,
+} from '../application/dto/add-schedule-settings.dto';
 import moment = require('moment');
 
 const db = admin.firestore();
@@ -31,7 +34,10 @@ export const setAgendaScheduleSettings = functions
         throw new HttpsError('invalid-argument', 'Agenda not found');
       }
 
-      if ((dto.dayOfWeek && dto.specificDate) || (!dto.dayOfWeek && !dto.specificDate)) {
+      if (
+        (dto.dayOfWeek && dto.specificDate) ||
+        (!dto.dayOfWeek && !dto.specificDate)
+      ) {
         throw new HttpsError(
           'invalid-argument',
           'Specify a day of week or specificDate in UTC format, not both nor any. ',

@@ -14,14 +14,24 @@ export const setAgendaConfigFunction = functions
     }
 
     //validate the dto
-    const { dto, errors } = await validateDto<SetAgendaConfigDto>(SetAgendaConfigDto, data);
+    const { dto, errors } = await validateDto<SetAgendaConfigDto>(
+      SetAgendaConfigDto,
+      data,
+    );
 
     if (errors.length > 0) {
-      throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
+      throw new HttpsError(
+        'invalid-argument',
+        'Validation errors',
+        errors.toString(),
+      );
     }
 
     //only allow to set the config if its the owner.
-    if (!ctx.auth.token.isBusinessOwner && dto.businessId === ctx.auth.token.businessId) {
+    if (
+      !ctx.auth.token.isBusinessOwner &&
+      dto.businessId === ctx.auth.token.businessId
+    ) {
       throw new HttpsError('permission-denied', 'Forbidden');
     }
 

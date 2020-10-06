@@ -13,14 +13,23 @@ export const GetAgendaConfigFunction = functions
     }
 
     //validate the dto
-    const { dto, errors } = await validateDto<GetAgendaConfigDto>(GetAgendaConfigDto, data);
+    const { dto, errors } = await validateDto<GetAgendaConfigDto>(
+      GetAgendaConfigDto,
+      data,
+    );
 
     if (errors.length > 0) {
-      throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
+      throw new HttpsError(
+        'invalid-argument',
+        'Validation errors',
+        errors.toString(),
+      );
     }
 
     try {
-      return await new GetAgendaConfigUseCase(new FirestoreAgendaRepository()).execute(dto);
+      return await new GetAgendaConfigUseCase(
+        new FirestoreAgendaRepository(),
+      ).execute(dto);
     } catch (e) {
       throw e;
     }

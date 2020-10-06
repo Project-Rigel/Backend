@@ -19,7 +19,10 @@ export class SetAgendaConfigUseCase {
       throw new HttpsError('invalid-argument', 'Agenda not found');
     }
 
-    if ((dto.dayOfWeek && dto.specificDate) || (!dto.dayOfWeek && !dto.specificDate)) {
+    if (
+      (dto.dayOfWeek && dto.specificDate) ||
+      (!dto.dayOfWeek && !dto.specificDate)
+    ) {
       throw new HttpsError(
         'invalid-argument',
         'Specify a day of week or specificDate in UTC format, not both nor any. ',
@@ -27,7 +30,10 @@ export class SetAgendaConfigUseCase {
     }
 
     if (dto.specificDate && dto.expirationDate) {
-      throw new HttpsError('invalid-argument', 'A specific date can have and expiration. ');
+      throw new HttpsError(
+        'invalid-argument',
+        'A specific date can have and expiration. ',
+      );
     }
 
     const specificDate = dto.specificDate ? moment(dto.specificDate) : null;
@@ -42,6 +48,10 @@ export class SetAgendaConfigUseCase {
 
     await this.agendaRepository.update(agenda.id, agenda);
 
-    return new SetAgendaConfigResponse(agenda.id, agenda.businessId, agenda.config);
+    return new SetAgendaConfigResponse(
+      agenda.id,
+      agenda.businessId,
+      agenda.config,
+    );
   }
 }
