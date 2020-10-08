@@ -21,7 +21,10 @@ export class AgendaConfig {
   }
 
   public isConfigValid(): boolean {
-    return this.expirationDate.getTime() >= new Date().getTime();
+    if (this.expirationDate) {
+      return this.expirationDate.getTime() >= new Date().getTime();
+    }
+    return true;
   }
 
   public isEquals(otherConfig: AgendaConfig): boolean {
