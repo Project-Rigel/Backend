@@ -33,6 +33,7 @@ export const bookAppointmentForBusinessFunction = functions
       );
     }
 
+    console.log(ctx.auth.token);
     if (
       !ctx.auth.token[IS_BUSINESS_OWNER_KEY] ||
       ctx.auth.token[BUSINESS_ID_KEY] !== dto.businessId

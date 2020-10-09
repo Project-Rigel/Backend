@@ -1,3 +1,4 @@
+import * as admin from 'firebase-admin';
 import { Repository } from '../../shared/repository';
 import { Customer } from '../domain/models/customer';
 
@@ -14,8 +15,21 @@ export class CustomerFirestoreRepository implements Repository<Customer> {
     return Promise.resolve([]);
   }
 
-  findOne(id: string): Promise<Customer> {
-    return Promise.resolve(undefined);
+  async findOne(id: string): Promise<Customer> {
+    const doc = await admin.firestore().collection('customers').doc(id).get();
+
+    const customerDocData = doc.data() ?? null;
+
+    if (!customerDocData) return null;
+
+    return new Customer(
+      customerDocData.id,
+      customerDocData.email,
+      customerDocData.name,
+      customerDocData.firstSurname,
+      customerDocData.secondSurname,
+      customerDocData.phone,
+    );
   }
 
   update(id: string, item: Customer): Promise<boolean> {

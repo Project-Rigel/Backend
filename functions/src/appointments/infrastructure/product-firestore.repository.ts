@@ -1,3 +1,4 @@
+import * as admin from 'firebase-admin';
 import { Repository } from '../../shared/repository';
 import { Product } from '../domain/models/product';
 
@@ -14,8 +15,20 @@ export class ProductFirestoreRepository implements Repository<Product> {
     return Promise.resolve([]);
   }
 
-  findOne(id: string): Promise<Product> {
-    return Promise.resolve(undefined);
+  async findOne(id: string): Promise<Product> {
+    const doc = await admin.firestore().collection('products').doc(id).get();
+
+    const productData = doc.data() ?? null;
+
+    if (!productData) return null;
+
+    return new Product(
+      productData.description,
+      productData.duration,
+      productData.name,
+      productData.id,
+      productData.businessId,
+    );
   }
 
   update(id: string, item: Product): Promise<boolean> {

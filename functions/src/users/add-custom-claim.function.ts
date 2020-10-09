@@ -13,5 +13,5 @@ export const createCustomClaimOnBusinessCreationFunction = functions
         businessId: context.params.businessId,
       }),
     );
-    await snapshot.ref.set({ hello: 'pene' }, { merge: true });
+    await snapshot.ref.set({ withClaim: true }, { merge: true });
   });
