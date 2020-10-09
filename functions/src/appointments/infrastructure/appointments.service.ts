@@ -31,6 +31,7 @@ export class AppointmentService {
         endDate: moment(val.endDate),
         name: val.name,
         startDate: moment(val.startDate),
+        agendaId: agendaId,
       };
     });
 

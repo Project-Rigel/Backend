@@ -8,6 +8,7 @@ export class Appointment {
   customerName: string;
   id: string;
   duration: number;
+  agendaId: string;
 
   constructor(
     startDate: moment.Moment,
@@ -17,6 +18,7 @@ export class Appointment {
     customerName: string,
     id: string,
     duration: number,
+    agendaId: string,
   ) {
     this.startDate = startDate;
     this.endDate = endDate;
@@ -25,5 +27,6 @@ export class Appointment {
     this.customerName = customerName;
     this.id = id;
     this.duration = duration;
+    this.agendaId = agendaId;
   }
 }

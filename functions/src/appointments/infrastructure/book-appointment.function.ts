@@ -155,6 +155,7 @@ async function computeNeededData(
     duration: product.duration,
     name: product.name,
     customerName: customer.name,
+    agendaId: dto.agendaId,
   };
   return { formattedDate, appointmentId, appointment };
 }

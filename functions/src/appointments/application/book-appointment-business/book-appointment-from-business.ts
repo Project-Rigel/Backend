@@ -64,6 +64,7 @@ export class BookAppointmentFromBusiness {
       customer.fullName,
       this.idGenerator.generate(),
       product.duration,
+      dto.agendaId,
     );
     await this.appointmentRepository.create(appointment);
 
