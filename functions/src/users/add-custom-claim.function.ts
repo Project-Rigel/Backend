@@ -13,5 +13,7 @@ export const createCustomClaimOnBusinessCreationFunction = functions
         businessId: context.params.businessId,
       }),
     );
+
+    await admin.auth().revokeRefreshTokens(ownerId);
     await snapshot.ref.set({ withClaim: true }, { merge: true });
   });
