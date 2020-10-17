@@ -33,7 +33,6 @@ export const bookAppointmentForBusinessFunction = functions
       );
     }
 
-    console.log(ctx.auth.token);
     if (
       !ctx.auth.token[IS_BUSINESS_OWNER_KEY] ||
       ctx.auth.token[BUSINESS_ID_KEY] !== dto.businessId
@@ -54,6 +53,6 @@ export const bookAppointmentForBusinessFunction = functions
       ).execute(dto);
       return { appointment: bookedAppointment };
     } catch (error) {
-      throw new HttpsError('internal', error.message);
+      throw new HttpsError(error.code, error.message);
     }
   });
