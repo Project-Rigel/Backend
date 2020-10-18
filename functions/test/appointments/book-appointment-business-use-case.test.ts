@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { DayOfWeek } from '../../src/agendas/application/dto/add-schedule-settings.dto';
 import { AgendaModel } from '../../src/agendas/domain/models/agenda';
 import { Interval } from '../../src/agendas/domain/models/agenda-interval';
-import { BookAppointmentFromBusiness } from '../../src/appointments/application/book-appointment-business/book-appointment-from-business';
+import { BookerForBusiness } from '../../src/appointments/application/book-appointment-business/booker-for-business';
 import { BookAppointmentForBusinessDto } from '../../src/appointments/application/book-appointment-business/dto/book-appointment-for-business.dto';
 import { Appointment } from '../../src/appointments/domain/models/appointment';
 import { Customer } from '../../src/appointments/domain/models/customer';
@@ -13,12 +13,14 @@ import { AppointmentResponseObjectMother } from '../object-mothers/appointment-r
 import { CustomerObjectMother } from '../object-mothers/customer.object-mother';
 import { ProductObjectMother } from '../object-mothers/product.object-mother';
 import { TestIdGenerator } from '../object-mothers/test-id-generator';
+import { FakeSMSSender } from '../stubs/fake-sms-sender';
 import { TestRepository } from '../stubs/repository.stub';
 import moment = require('moment');
 
 describe('booking appointment from business', () => {
   it('should throw an exception when the agenda does not exists', async () => {
     const dto = new BookAppointmentForBusinessDto(
+      true,
       '1',
       '2020-10-03T08:32:32.237Z',
       '1',
@@ -26,18 +28,20 @@ describe('booking appointment from business', () => {
       '1',
     );
 
-    const result = new BookAppointmentFromBusiness(
+    const result = new BookerForBusiness(
       new TestRepository<AgendaModel>(),
       new TestRepository<Product>(),
       new TestRepository<Customer>(),
       new TestRepository<Appointment>(),
       new TestIdGenerator(),
-    ).execute(dto);
+      new FakeSMSSender(),
+    ).book(dto);
     await expect(result).rejects.toThrow('Agenda not found.');
   });
 
   it('should throw an exception when product doesnot exist', async () => {
     const dto = new BookAppointmentForBusinessDto(
+      true,
       '1',
       '2020-10-03T08:32:32.237Z',
       '1',
@@ -47,19 +51,21 @@ describe('booking appointment from business', () => {
     const agendaRepo = new TestRepository<AgendaModel>();
     await agendaRepo.create(AgendaObjectMother.RandomAgenda('1', '1', null));
 
-    const result = new BookAppointmentFromBusiness(
+    const result = new BookerForBusiness(
       agendaRepo,
       new TestRepository<Product>(),
       new TestRepository<Customer>(),
       new TestRepository<Appointment>(),
       new TestIdGenerator(),
-    ).execute(dto);
+      new FakeSMSSender(),
+    ).book(dto);
     await expect(result).rejects.toThrow('Product not found.');
   });
 
   it('should give a valid appointment when booked inside agenda config', async () => {
     const startDate = moment('2020-10-03T09:00:00.000Z');
     const dto = new BookAppointmentForBusinessDto(
+      true,
       '1',
       startDate.toISOString(),
       '1',
@@ -84,13 +90,14 @@ describe('booking appointment from business', () => {
     const customerRepo = new TestRepository<Customer>();
     await customerRepo.create(CustomerObjectMother.getRandom());
 
-    const result = new BookAppointmentFromBusiness(
+    const result = new BookerForBusiness(
       agendaRepo,
       productRepo,
       customerRepo,
       new TestRepository<Appointment>(),
       new TestIdGenerator(),
-    ).execute(dto);
+      new FakeSMSSender(),
+    ).book(dto);
     await expect(result).resolves.toStrictEqual(
       AppointmentResponseObjectMother.get(startDate.toDate(), 1, '1 1 1', '1'),
     );
@@ -100,6 +107,7 @@ describe('booking appointment from business', () => {
     const startDate = moment('2020-10-03T09:00:00.000Z');
     const id = new TestIdGenerator().generate();
     const dto = new BookAppointmentForBusinessDto(
+      true,
       '1',
       startDate.toISOString(),
       id,
@@ -125,13 +133,14 @@ describe('booking appointment from business', () => {
     const customerRepo = new TestRepository<Customer>();
     await customerRepo.create(CustomerObjectMother.getRandom());
 
-    const result = new BookAppointmentFromBusiness(
+    const result = new BookerForBusiness(
       agendaRepo,
       productRepo,
       customerRepo,
       new TestRepository<Appointment>(),
       new TestIdGenerator(),
-    ).execute(dto);
+      new FakeSMSSender(),
+    ).book(dto);
     await expect(result).rejects.toThrow(
       'the specified date is off the agenda config.',
     );

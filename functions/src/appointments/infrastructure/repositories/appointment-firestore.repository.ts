@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
-import { Repository } from '../../shared/repository';
-import { getFormattedDateDMY } from '../../shared/utils/date';
-import { Appointment } from '../domain/models/appointment';
+import { Repository } from '../../../shared/repository';
+import { getFormattedDateDMY } from '../../../shared/utils/date';
+import { Appointment } from '../../domain/models/appointment';
 import moment = require('moment');
 
 export class AppointmentFirestoreRepository implements Repository<Appointment> {

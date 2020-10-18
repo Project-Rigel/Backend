@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
-import { Repository } from '../../shared/repository';
-import { Product } from '../domain/models/product';
+import { Repository } from '../../../shared/repository';
+import { Product } from '../../domain/models/product';
 
 export class ProductFirestoreRepository implements Repository<Product> {
   create(item: Product): Promise<boolean> {

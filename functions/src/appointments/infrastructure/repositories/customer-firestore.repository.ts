@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin';
-import { Repository } from '../../shared/repository';
-import { Customer } from '../domain/models/customer';
+import PhoneNumber, { CountryPrefix } from '../../../shared/phone-number';
+import { Repository } from '../../../shared/repository';
+import { Customer } from '../../domain/models/customer';
 
 export class CustomerFirestoreRepository implements Repository<Customer> {
   create(item: Customer): Promise<boolean> {
@@ -28,7 +29,7 @@ export class CustomerFirestoreRepository implements Repository<Customer> {
       customerDocData.name,
       customerDocData.firstSurname,
       customerDocData.secondSurname,
-      customerDocData.phone,
+      new PhoneNumber(CountryPrefix.Spain, customerDocData.phone),
     );
   }
 

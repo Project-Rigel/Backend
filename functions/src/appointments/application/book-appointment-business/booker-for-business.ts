@@ -1,24 +1,27 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import * as moment from 'moment';
 import { AgendaModel } from '../../../agendas/domain/models/agenda';
+import PhoneNumber, { CountryPrefix } from '../../../shared/phone-number';
 import { Repository } from '../../../shared/repository';
 import { IdGenerator } from '../../../shared/uid-generator';
 import { Appointment } from '../../domain/models/appointment';
 import { Customer } from '../../domain/models/customer';
 import { Product } from '../../domain/models/product';
+import { SmsSender } from '../../domain/services/sms-sender';
 import { AppointmentResponse } from '../dto/appointment.response';
 import { BookAppointmentForBusinessDto } from './dto/book-appointment-for-business.dto';
 
-export class BookAppointmentFromBusiness {
+export class BookerForBusiness {
   constructor(
     private readonly agendaRepository: Repository<AgendaModel>,
     public readonly productRepository: Repository<Product>,
     public readonly customerRepository: Repository<Customer>,
     public readonly appointmentRepository: Repository<Appointment>,
     public readonly idGenerator: IdGenerator,
+    public readonly smsSender: SmsSender,
   ) {}
 
-  public async execute(
+  public async book(
     dto: BookAppointmentForBusinessDto,
   ): Promise<AppointmentResponse> {
     const agenda = await this.agendaRepository.findOne(dto.agendaId);
@@ -67,6 +70,13 @@ export class BookAppointmentFromBusiness {
       dto.agendaId,
     );
     await this.appointmentRepository.create(appointment);
+
+    if (dto.sendSMS) {
+      this.smsSender.send(
+        new PhoneNumber(CountryPrefix.Spain, '637624833'),
+        'hola probando tu nueva cita.',
+      );
+    }
 
     return AppointmentResponse.fromAppointment(appointment);
   }

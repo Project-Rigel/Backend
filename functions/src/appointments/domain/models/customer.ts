@@ -1,10 +1,12 @@
+import PhoneNumber from '../../../shared/phone-number';
+
 export class Customer {
   id: string;
   email: string;
   name: string;
   firstSurname: string;
   secondSurname: string;
-  phone: string;
+  phone: PhoneNumber;
 
   constructor(
     id: string,
@@ -12,7 +14,7 @@ export class Customer {
     name: string,
     firstSurname: string,
     secondSurname: string,
-    phone: string,
+    phone: PhoneNumber,
   ) {
     this.id = id;
     this.email = email;
