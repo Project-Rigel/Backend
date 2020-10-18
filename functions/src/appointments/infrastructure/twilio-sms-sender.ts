@@ -4,8 +4,8 @@ import { SmsSender } from '../domain/services/sms-sender';
 
 export class TwilioSmsSender implements SmsSender {
   async send(to: PhoneNumber, message: string): Promise<void> {
-    const accountSid = functions.config().twilio['account-sid'];
-    const authToken = functions.config().twilio['auth-token'];
+    const accountSid = functions.config().twilio.accountsid;
+    const authToken = functions.config().twilio.authtoken;
 
     const client = require('twilio')(accountSid, authToken);
 

@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { anything, instance, mock, verify } from 'ts-mockito';
 import { DayOfWeek } from '../../src/agendas/application/dto/add-schedule-settings.dto';
 import { AgendaModel } from '../../src/agendas/domain/models/agenda';
 import { Interval } from '../../src/agendas/domain/models/agenda-interval';
@@ -144,5 +145,49 @@ describe('booking appointment from business', () => {
     await expect(result).rejects.toThrow(
       'the specified date is off the agenda config.',
     );
+  });
+
+  it('should call to send an sms when the dto specifies so', async () => {
+    const startDate = moment('2020-10-03T11:00:00.000Z');
+    const id = new TestIdGenerator().generate();
+    const dto = new BookAppointmentForBusinessDto(
+      true,
+      '1',
+      startDate.toISOString(),
+      id,
+      id,
+      id,
+    );
+
+    const agendaRepo = new TestRepository<AgendaModel>();
+    await agendaRepo.create(
+      AgendaObjectMother.RandomAgenda(
+        id,
+        id,
+        AgendaConfigMother.RandomConfigWithDayOfWeek(DayOfWeek.Saturday, [
+          new Interval('10:00', '11:00'),
+          new Interval('13:00', '14:00'),
+        ]),
+      ),
+    );
+
+    const productRepo = new TestRepository<Product>();
+    await productRepo.create(ProductObjectMother.getRandom());
+
+    const customerRepo = new TestRepository<Customer>();
+    await customerRepo.create(CustomerObjectMother.getRandom());
+
+    const smsSenderMock = mock(FakeSMSSender);
+    const instanceSender = instance(smsSenderMock);
+
+    await new BookerForBusiness(
+      agendaRepo,
+      productRepo,
+      customerRepo,
+      new TestRepository<Appointment>(),
+      new TestIdGenerator(),
+      instanceSender,
+    ).book(dto);
+    verify(smsSenderMock.send(anything(), anything())).once();
   });
 });
