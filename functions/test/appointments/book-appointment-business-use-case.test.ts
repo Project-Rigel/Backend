@@ -19,7 +19,7 @@ import { TestRepository } from '../stubs/repository.stub';
 import moment = require('moment');
 
 describe('booking appointment from business', () => {
-  it('should throw an exception when the agenda does not exists', async () => {
+  it.only('should throw an exception when the agenda does not exists', async () => {
     const dto = new BookAppointmentForBusinessDto(
       true,
       '1',
@@ -40,7 +40,7 @@ describe('booking appointment from business', () => {
     await expect(result).rejects.toThrow('Agenda not found.');
   });
 
-  it('should throw an exception when product doesnot exist', async () => {
+  it.only('should throw an exception when product doesnot exist', async () => {
     const dto = new BookAppointmentForBusinessDto(
       true,
       '1',
@@ -63,7 +63,7 @@ describe('booking appointment from business', () => {
     await expect(result).rejects.toThrow('Product not found.');
   });
 
-  it('should give a valid appointment when booked inside agenda config', async () => {
+  it.only('should give a valid appointment when booked inside agenda config', async () => {
     const startDate = moment('2020-10-03T09:00:00.000Z');
     const dto = new BookAppointmentForBusinessDto(
       true,
@@ -104,7 +104,7 @@ describe('booking appointment from business', () => {
     );
   });
 
-  it('should throw an error when booked outside of agenda config', async () => {
+  it.only('should throw an error when booked outside of agenda config', async () => {
     const startDate = moment('2020-10-03T09:00:00.000Z');
     const id = new TestIdGenerator().generate();
     const dto = new BookAppointmentForBusinessDto(
