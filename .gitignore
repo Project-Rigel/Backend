@@ -1,7 +1,7 @@
 ## Compiled JavaScript files
 **/*.js
 **/*.js.map
-
+!**/jest.config.js
 # Typescript v1 declaration files
 typings/
 
@@ -16,3 +16,13 @@ functions/src/secrets/
 functions/lib/
 
 **/secrets/
+
+### Firebase ###
+.idea
+**/node_modules/*
+**/.firebaserc
+
+### Firebase Patch ###
+.runtimeconfig.json
+.firebase/
+*.log
