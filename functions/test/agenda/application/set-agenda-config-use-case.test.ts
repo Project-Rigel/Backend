@@ -11,6 +11,7 @@ import { DateFactory } from '../../../src/shared/date.factory';
 import { AgendaObjectMother } from '../../object-mothers/agenda.object-mother';
 import { TestRepository } from '../../stubs/repository.stub';
 import moment = require('moment');
+import { AgendaModel } from '../../../src/agendas/domain/models/agenda';
 
 describe('set agendas config use case', () => {
   it('should return an updated agendas with valid config', async () => {
@@ -23,7 +24,7 @@ describe('set agendas config use case', () => {
       [new Interval('09:00', '12:00')],
     );
 
-    const mockedRepo = mock(TestRepository);
+    const mockedRepo = mock<TestRepository<AgendaModel>>();
     when(mockedRepo.findOne(anyString())).thenResolve(
       AgendaObjectMother.RandomAgenda('1', '2', null),
     );

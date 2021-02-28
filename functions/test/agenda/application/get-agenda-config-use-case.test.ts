@@ -5,12 +5,13 @@ import { GetAgendaConfigUseCase } from '../../../src/agendas/application/get-age
 import { AgendaConfigMother } from '../../object-mothers/agenda-config.mother';
 import { AgendaObjectMother } from '../../object-mothers/agenda.object-mother';
 import { TestRepository } from '../../stubs/repository.stub';
+import { AgendaModel } from '../../../src/agendas/domain/models/agenda';
 
 describe('get agenda config use case', () => {
   it('should return no config when the agenda has none', async () => {
     const dto = new GetAgendaConfigDto('1', '1', true);
 
-    const mockedRepo = mock(TestRepository);
+    const mockedRepo = mock<TestRepository<AgendaModel>>();
     when(mockedRepo.findOne(anyString())).thenResolve(
       AgendaObjectMother.RandomAgenda('1', '2', []),
     );
@@ -24,7 +25,7 @@ describe('get agenda config use case', () => {
   it('should return a correct config when the agenda has one', async () => {
     const dto = new GetAgendaConfigDto('1', '1', true);
 
-    const mockedRepo = mock(TestRepository);
+    const mockedRepo = mock<TestRepository<AgendaModel>>();
     when(mockedRepo.findOne(anyString())).thenResolve(
       AgendaObjectMother.RandomAgenda(
         '1',
