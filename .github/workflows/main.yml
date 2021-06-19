@@ -1,9 +1,8 @@
-name: Build App
+name: Build and release app
 
 on:
   push:
-    branches: [ master, dev ]
-
+    branches: [master]
 
 jobs:
   ci:
@@ -38,5 +37,3 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: rigel-admin
-
-
