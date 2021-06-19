@@ -16,16 +16,26 @@ export const getOpenDaysForMonth = functions
     }
 
     //validate the dto
-    const { dto, errors } = await validateDto<GetAvailableDaysDto>(GetAvailableDaysDto, data);
+    const { dto, errors } = await validateDto<GetAvailableDaysDto>(
+      GetAvailableDaysDto,
+      data,
+    );
 
     if (errors.length > 0) {
-      throw new HttpsError('invalid-argument', 'Validation errors', errors.toString());
+      throw new HttpsError(
+        'invalid-argument',
+        'Validation errors',
+        errors.toString(),
+      );
     }
 
     const agendaData = (await db.doc('agendas/' + dto.agendaId).get()).data();
 
     if (!agendaData) {
-      throw new HttpsError('internal', 'There is no agendas created with that ID.');
+      throw new HttpsError(
+        'internal',
+        'There is no agendas created with that ID.',
+      );
     }
 
     if (!agendaData.intervals) {
@@ -90,7 +100,10 @@ function computeOpenDaysForGivenAgenda(intervals: number[], openDays: any[]) {
   }
 }
 
-function extractAgendaConfigData(agendaData: FirebaseFirestore.DocumentData, intervals: any[]) {
+function extractAgendaConfigData(
+  agendaData: FirebaseFirestore.DocumentData,
+  intervals: any[],
+) {
   Object.keys(agendaData.intervals).forEach((key) => {
     if (key.toString().length <= 1) {
       intervals.push(Number.parseInt(key));

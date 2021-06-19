@@ -1,4 +1,8 @@
-import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
+import {
+  registerDecorator,
+  ValidationArguments,
+  ValidationOptions,
+} from 'class-validator';
 import moment = require('moment');
 
 export function IsHourInHHmmFormat(validationOptions?: ValidationOptions) {

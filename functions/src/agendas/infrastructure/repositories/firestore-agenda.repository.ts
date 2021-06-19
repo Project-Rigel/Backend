@@ -45,7 +45,7 @@ export class FirestoreAgendaRepository implements Repository<AgendaModel> {
     const res = await admin
       .firestore()
       .doc(`agendas/${id}`)
-      .set(JSON.parse(JSON.stringify(item)));
+      .set(JSON.parse(JSON.stringify(item)), { merge: true });
 
     return !res;
   }
@@ -74,7 +74,10 @@ export class FirestoreAgendaRepository implements Repository<AgendaModel> {
     return this.adjustMomentsToTimestamp(intervals, timestamp);
   }
 
-  private adjustMomentsToTimestamp(intervals: AgendaIntervalSetting[], timestamp: string) {
+  private adjustMomentsToTimestamp(
+    intervals: AgendaIntervalSetting[],
+    timestamp: string,
+  ) {
     const dayMoment = moment.utc(timestamp);
 
     intervals.map((val) => {

@@ -1,4 +1,5 @@
 import * as admin from 'firebase-admin';
+import { Moment } from 'moment';
 import { getDayEnumFromString } from '../../../shared/utils/date';
 import { IntervalDto } from '../../application/dto/add-schedule-settings.dto';
 import { AgendaConfig } from './agenda-config';
@@ -11,7 +12,11 @@ export class AgendaModel {
   businessId: string;
   config: AgendaConfig[];
 
-  constructor(agendaId: string, businessId: string, config: AgendaConfig[] | null) {
+  constructor(
+    agendaId: string,
+    businessId: string,
+    config: AgendaConfig[] | null,
+  ) {
     this.id = agendaId;
     this.businessId = businessId;
     this.config = [];
@@ -28,7 +33,12 @@ export class AgendaModel {
     const mappedIntervals = intervals.map((interval) => {
       return new Interval(interval.startHour, interval.endHour);
     });
-    const newConfig = new AgendaConfig(null, moment(specificDate).toDate(), null, mappedIntervals);
+    const newConfig = new AgendaConfig(
+      null,
+      moment(specificDate).toDate(),
+      null,
+      mappedIntervals,
+    );
     this.addOrUpdateConfig(newConfig);
   }
 
@@ -50,7 +60,10 @@ export class AgendaModel {
     this.addOrUpdateConfig(newConfig);
   }
 
-  public async getAgendaIntervals(agendaId: string): Promise<AgendaIntervalSetting[]> {
+  //todo move to firestore-agenda.repository.ts
+  public async getAgendaIntervals(
+    agendaId: string,
+  ): Promise<AgendaIntervalSetting[]> {
     let agendaDoc = await admin.firestore().doc(`agendas/${agendaId}`).get();
     const timesData = agendaDoc.data() ?? {};
 
@@ -72,15 +85,61 @@ export class AgendaModel {
 
   addOrUpdateConfig(newConfig: AgendaConfig): void {
     let updated = false;
-    this.config.forEach((config, index) => {
+    for (let i = 0; i < this.config.length; i++) {
+      const config = this.config[i];
+
       if (config.isEquals(newConfig)) {
-        this.config[index] = newConfig;
+        this.config[i] = newConfig;
         updated = true;
-        return;
+        break;
       }
-    });
+    }
+
     if (!updated) {
       this.config.push(newConfig);
     }
+  }
+
+  public isDateIntervalInsideConfig(startDate: Date, endDate: Date): boolean {
+    const validConfigs = this.config.filter((val) => {
+      return (
+        val.isEqualsToSpecificDate(startDate) ||
+        val.dayOfWeek === startDate.getDay()
+      );
+    });
+
+    let validAgendaConfig: AgendaConfig = null;
+    if (validConfigs.length > 0) {
+      for (let i = 0; i < validConfigs.length; i++) {
+        const config = validConfigs[i];
+
+        if (config.specificDate) {
+          validAgendaConfig = config;
+          break;
+        } else {
+          validAgendaConfig = config;
+        }
+      }
+    } else {
+      return false;
+    }
+
+    const suitableInterval = validAgendaConfig.intervals.find(
+      (interval) =>
+        this.minutesOfDay(moment(startDate)) >=
+          this.minutesOfDay(moment(interval.startHour, 'HH:mm')) &&
+        this.minutesOfDay(moment(endDate)) <=
+          this.minutesOfDay(moment(interval.endHour, 'HH:mm')),
+    );
+
+    return suitableInterval !== undefined;
+  }
+
+  private minutesOfDay(m: Moment) {
+    const hours = m.hours() * 60;
+    const min = m.minutes();
+    const sec = m.seconds() / 60;
+    const result = hours + min + sec;
+    return result;
   }
 }

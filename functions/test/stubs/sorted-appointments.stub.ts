@@ -13,7 +13,10 @@ export class SortedAppointmentsStub {
       .minutes(0)
       .seconds(0)
       .milliseconds(0);
-    const firstAppointmentEndMoment = moment(firstAppointmentStartMoment).add(duration, 'minutes');
+    const firstAppointmentEndMoment = moment(firstAppointmentStartMoment).add(
+      duration,
+      'minutes',
+    );
 
     const secondAppointmentStartMoment = moment(firstAppointmentEndMoment)
       .utcOffset(0)
@@ -35,6 +38,7 @@ export class SortedAppointmentsStub {
         name: 'hell',
         duration: 30,
         id: 'a',
+        agendaId: 'a',
       },
 
       {
@@ -45,6 +49,7 @@ export class SortedAppointmentsStub {
         name: 'hell',
         duration: 30,
         id: 'a',
+        agendaId: 'a',
       },
     ];
   }
@@ -61,7 +66,10 @@ export class SortedAppointmentsStub {
       .minutes(0)
       .seconds(0)
       .milliseconds(0);
-    const firstAppointmentEndMoment = moment(firstAppointmentStartMoment).add(duration, 'minutes');
+    const firstAppointmentEndMoment = moment(firstAppointmentStartMoment).add(
+      duration,
+      'minutes',
+    );
 
     const secondAppointmentStartMoment = moment()
       .utcOffset(0)
@@ -94,6 +102,7 @@ export class SortedAppointmentsStub {
         name: 'hell',
         duration: 30,
         id: 'a',
+        agendaId: 'a',
       },
       {
         startDate: secondAppointmentStartMoment.utc(),
@@ -103,6 +112,7 @@ export class SortedAppointmentsStub {
         name: 'hell',
         duration: 30,
         id: 'a',
+        agendaId: 'a',
       },
       {
         startDate: thirdAppointmentStartMoment.utc(),
@@ -112,6 +122,7 @@ export class SortedAppointmentsStub {
         name: 'hell',
         duration: 30,
         id: 'a',
+        agendaId: 'a',
       },
     ];
   }
