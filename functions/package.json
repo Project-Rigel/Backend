@@ -32,7 +32,7 @@
     "firebase-tools": "^9.14.0",
     "moment": "^2.29.1",
     "reflect-metadata": "^0.1.13",
-    "twilio": "^3.64.0"
+    "twilio": "^3.65.0"
   },
   "devDependencies": {
     "@types/babel__core": "^7.1.14",
